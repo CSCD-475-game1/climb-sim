@@ -4,7 +4,7 @@ using System.Globalization;
 using UnityEngine;
 
 [ExecuteAlways]
-public class TrailPreview : MonoBehaviour
+public class Trail : MonoBehaviour
 {
     [Header("Input")]
     public TextAsset csvFile;
