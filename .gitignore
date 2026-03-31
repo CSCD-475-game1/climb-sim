@@ -97,3 +97,154 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+
+
+
+
+
+
+
+
+
+# =========================
+# Unity
+# =========================
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+UserSettings/
+MemoryCaptures/
+Recordings/
+
+# Asset import / cache artifacts
+[Aa]ssets/AssetStoreTools*
+
+# Visual Studio / Rider / MonoDevelop
+.vs/
+.idea/
+.gradle/
+ExportedObj/
+.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity generated / crash files
+sysinfo.txt
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Ignore generated profiler captures
+*.raw
+*.data
+
+# Burst / Addressables / cache-ish folders
+[Bb]ee/
+StreamingAssets/aa.meta
+StreamingAssets/aa/
+
+# =========================
+# Package manager
+# =========================
+# Keep manifest.json and packages-lock.json committed.
+# Ignore package cache / downloaded artifacts if present.
+Packages/*/
+!Packages/manifest.json
+!Packages/packages-lock.json
+
+# If you use local packages inside Packages/, remove the line above
+# and ignore only known cache folders instead.
+
+# =========================
+# QGIS / GIS temp and user files
+# =========================
+*.qgs~
+*.qgz~
+*.tmp
+*.bak
+*.aux.xml
+*.ovr
+*.rrd
+*.lck
+*.lock
+*.qlr
+
+# QGIS project user-specific settings
+*.qgd
+
+# GDAL / raster pyramids / sidecars often regenerated
+*.tfw
+*.jgw
+*.pgw
+*.wld
+*.prj~
+*.qpj
+*.xml~
+
+# Shapefile sidecars you may want to ignore if generated only
+# Comment these out if they are authoritative project data.
+# *.sbn
+# *.sbx
+# *.fbn
+# *.fbx
+# *.ain
+# *.aih
+# *.ixs
+# *.mxs
+# *.atx
+# *.cpg
+
+# =========================
+# OS cruft
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+Desktop.ini
+
+# =========================
+# Python / notebooks / misc tools
+# =========================
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+
+# =========================
+# Archives and exports
+# =========================
+*.zip
+*.7z
+*.tar
+*.gz
+*.rar
+
+# =========================
+# Secrets / local env
+# =========================
+.env
+.env.*
+*.pem
+*.key
