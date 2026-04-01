@@ -225,7 +225,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6169b80e6b65f7e4ab7cd0c68632ded4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CarController
-  moveSpeed: 12
+  moveSpeed: 35
   turnSpeed: 50
   canDrive: 0
 --- !u!65 &209735836
@@ -257,7 +257,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 209735834}
   serializedVersion: 5
-  m_Mass: 1000
+  m_Mass: 3000
   m_LinearDamping: 0.1
   m_AngularDamping: 0.5
   m_CenterOfMass: {x: 0, y: 0, z: 0}
