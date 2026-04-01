@@ -1,0 +1,174 @@
+using UnityEngine;
+
+public class EnterCar : MonoBehaviour
+{
+    [Header("FPS side")]
+    public GameObject fpsControllerRoot;
+    public Camera fpsCamera;
+    public Behaviour[] fpsBehavioursToDisable;
+
+    [Header("Car side")]
+    public float enterDistance = 4f;
+
+    private GameObject car;
+    private CarController carController;
+    private Camera carCamera;
+    private AudioListener fpsListener;
+    private AudioListener carListener;
+
+    private bool inCar = false;
+    private bool loggedCar = false;
+
+    void Start()
+    {
+        fpsListener = fpsCamera != null ? fpsCamera.GetComponent<AudioListener>() : null;
+        ForceStartOnFoot();
+    }
+
+    void Update()
+    {
+        TryFindCar();
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (!inCar)
+                TryEnter();
+            else
+                ExitVehicle();
+        }
+    }
+
+    void ForceStartOnFoot()
+    {
+        inCar = false;
+
+        if (fpsCamera != null)
+            fpsCamera.enabled = true;
+
+        if (fpsListener != null)
+            fpsListener.enabled = true;
+
+        SetFPSControlsEnabled(true);
+
+        if (carController != null)
+            carController.canDrive = false;
+
+        if (carCamera != null)
+            carCamera.enabled = false;
+
+        if (carListener != null)
+            carListener.enabled = false;
+    }
+
+    void TryFindCar()
+    {
+        if (car != null && carController != null && carCamera != null)
+            return;
+
+        car = GameObject.FindWithTag("Car");
+        if (car == null)
+            return;
+
+        carController = car.GetComponent<CarController>();
+        carCamera = FindNamedCamera(car, "CarCamera");
+
+        if (carCamera != null)
+            carListener = carCamera.GetComponent<AudioListener>();
+
+        if (!loggedCar)
+        {
+            Debug.Log("Car found: " + car.name);
+            Debug.Log("Car camera found: " + (carCamera != null ? carCamera.name : "null"));
+            loggedCar = true;
+        }
+
+        if (carController != null)
+            carController.canDrive = false;
+
+        if (carCamera != null)
+            carCamera.enabled = false;
+
+        if (carListener != null)
+            carListener.enabled = false;
+    }
+
+    Camera FindNamedCamera(GameObject root, string targetName)
+    {
+        Camera[] cameras = root.GetComponentsInChildren<Camera>(true);
+        foreach (Camera cam in cameras)
+        {
+            if (cam.name == targetName)
+                return cam;
+        }
+        return null;
+    }
+
+    void TryEnter()
+    {
+        if (car == null || carController == null || carCamera == null || fpsControllerRoot == null || fpsCamera == null)
+        {
+            Debug.LogError("Missing car, car controller, car camera, fps controller root, or fps camera.");
+            return;
+        }
+
+        float d = Vector3.Distance(fpsControllerRoot.transform.position, car.transform.position);
+        if (d > enterDistance)
+            return;
+
+        EnterVehicle();
+    }
+
+    void EnterVehicle()
+    {
+        inCar = true;
+
+        // Enable car view first
+        carCamera.enabled = true;
+        if (carListener != null) carListener.enabled = true;
+
+        // Then disable FPS view
+        fpsCamera.enabled = false;
+        if (fpsListener != null) fpsListener.enabled = false;
+
+        // Disable FPS movement, but keep object alive
+        SetFPSControlsEnabled(false);
+
+        // Enable car movement
+        carController.canDrive = true;
+
+        Debug.Log($"Entered car. Cameras active: {Camera.allCamerasCount}");
+    }
+
+    void ExitVehicle()
+    {
+        inCar = false;
+
+        // Re-enable FPS view first
+        fpsCamera.enabled = true;
+        if (fpsListener != null) fpsListener.enabled = true;
+
+        // Disable car view
+        carController.canDrive = false;
+        carCamera.enabled = false;
+        if (carListener != null) carListener.enabled = false;
+
+        // Re-enable FPS movement
+        SetFPSControlsEnabled(true);
+
+        // Move player beside car
+        fpsControllerRoot.transform.position = car.transform.position + car.transform.right * 2f;
+
+        Debug.Log($"Exited car. Cameras active: {Camera.allCamerasCount}");
+    }
+
+    void SetFPSControlsEnabled(bool enabledState)
+    {
+        if (fpsBehavioursToDisable == null) return;
+
+        foreach (Behaviour b in fpsBehavioursToDisable)
+        {
+            if (b != null)
+                b.enabled = enabledState;
+        }
+    }
+}
