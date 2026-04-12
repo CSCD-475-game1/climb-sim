@@ -9,6 +9,7 @@ public class AnimationControl : MonoBehaviour
     public float moveSpeed = 2f;
     public float turnSpeed = 8f;
     public float heightOffset = 0.05f;
+    public LayerMask groundMask;
 
     private Animator animator;
 
@@ -33,7 +34,8 @@ public class AnimationControl : MonoBehaviour
         if (distance > detectRange)
         {
             animator.SetFloat("Speed", 0f, 0.1f, Time.deltaTime);
-            SnapToTerrain();
+            //SnapToTerrain();
+            SnapToGround();
             return;
         }
 
@@ -61,7 +63,8 @@ public class AnimationControl : MonoBehaviour
 
         animator.SetFloat("Direction", 0f);
 
-        SnapToTerrain();
+        //SnapToTerrain();
+        SnapToGround();
     }
 
     void SnapToTerrain()
@@ -73,5 +76,16 @@ public class AnimationControl : MonoBehaviour
         float terrainY = terrain.SampleHeight(pos) + terrain.transform.position.y;
         pos.y = terrainY + heightOffset;
         transform.position = pos;
+    }
+    void SnapToGround()
+    {
+        Vector3 rayStart = transform.position + Vector3.up * 2f;
+
+        if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, 10f, groundMask))
+        {
+            Vector3 pos = transform.position;
+            pos.y = hit.point.y + heightOffset;
+            transform.position = pos;
+        }
     }
 }
