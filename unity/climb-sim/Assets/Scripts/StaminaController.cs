@@ -61,6 +61,6 @@ public class StaminaController : MonoBehaviour
         float percentage = Mathf.Clamp((currentStamina / maxStamina) * 100f, 0f, 100f);
         staminaBar.style.width = Length.Percent(percentage);
 
-        Debug.Log($"Percent: {percentage}, resolved width: {staminaBar.resolvedStyle.width}");
+        //Debug.Log($"Percent: {percentage}, resolved width: {staminaBar.resolvedStyle.width}");
     }
 }
