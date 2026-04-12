@@ -22,6 +22,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
         [SerializeField] private AudioClip[] m_FootstepSounds;    // an array of footstep sounds that will be randomly selected from.
         [SerializeField] private AudioClip m_JumpSound;           // the sound played when character leaves the ground.
         [SerializeField] private AudioClip m_LandSound;           // the sound played when character touches back on ground.
+        [SerializeField] private StaminaController m_StaminaController;
+        [SerializeField] private float m_ExhaustedSpeedMultiplier = 0.8f;
 
         private Camera m_Camera;
         private bool m_Jump;
@@ -178,10 +180,22 @@ namespace UnityStandardAssets.Characters.FirstPerson
 #if !MOBILE_INPUT
             // On standalone builds, walk/run speed is modified by a key press.
             // keep track of whether or not the character is walking or running
-            m_IsWalking = !Input.GetKey(KeyCode.LeftShift);
+            bool wantsSprint = Input.GetKey(KeyCode.LeftShift);
+
+            if (m_StaminaController != null && m_StaminaController.IsExhausted)
+            {
+                m_IsWalking = true;
+                speed = m_WalkSpeed * m_ExhaustedSpeedMultiplier;
+            }
+            else
+            {
+                m_IsWalking = !wantsSprint;
+                speed = m_IsWalking ? m_WalkSpeed : m_RunSpeed;
+            }
+            //m_IsWalking = !Input.GetKey(KeyCode.LeftShift);
 #endif
             // set the desired speed to be walking or running
-            speed = m_IsWalking ? m_WalkSpeed : m_RunSpeed;
+            //speed = m_IsWalking ? m_WalkSpeed : m_RunSpeed;
             m_Input = new Vector2(horizontal, vertical);
 
             // normalize input if it exceeds 1 in combined length:

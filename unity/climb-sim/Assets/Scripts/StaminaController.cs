@@ -11,6 +11,7 @@ public class StaminaController : MonoBehaviour
     public float currentStamina = 100f;
     public float consumptionRate = 20f;
     public float regenRate = 15f;
+    public bool IsExhausted => currentStamina <= 10.0f;
 
     void Awake()
     {
