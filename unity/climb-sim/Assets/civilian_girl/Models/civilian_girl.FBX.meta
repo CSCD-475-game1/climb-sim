@@ -1,7 +1,14 @@
 fileFormatVersion: 2
 guid: cd878b4e80603504aa60937583de2ced
+AssetOrigin:
+  serializedVersion: 1
+  productId: 283633
+  packageName: Female Civilian
+  packageVersion: 1.0
+  assetPath: Assets/civilian_girl/Models/civilian_girl.FBX
+  uploadId: 660411
 ModelImporter:
-  serializedVersion: 21300
+  serializedVersion: 24200
   internalIDToNameTable: []
   externalObjects:
   - first:
@@ -46,8 +53,6 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 1
     motionNodeName: 
-    rigImportErrors: 
-    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -70,6 +75,7 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -87,6 +93,9 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
@@ -97,6 +106,7 @@ ModelImporter:
     secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -709,8 +719,7 @@ ModelImporter:
     - name: thumb_03_l
       parentName: thumb_02_l
       position: {x: -0.030162811, y: -0.00093502045, z: -0.00016872406}
-      rotation: {x: -0.00000026822084, y: -0.00000007450486, z: 0.000000033527616,
-        w: 1}
+      rotation: {x: -0.00000026822084, y: -0.00000007450486, z: 0.000000033527616, w: 1}
       scale: {x: 0.99999857, y: 0.9999911, z: 1.0000097}
     - name: index_01_l
       parentName: hand_l
@@ -775,14 +784,12 @@ ModelImporter:
     - name: lowerarm_twist_01_l
       parentName: lowerarm_l
       position: {x: -0.123065256, y: -0.011889491, z: -0.0118737025}
-      rotation: {x: 0.000000059604645, y: -0.000000014901161, z: -0.000000059604645,
-        w: 1}
+      rotation: {x: 0.000000059604645, y: -0.000000014901161, z: -0.000000059604645, w: 1}
       scale: {x: 1, y: 1.0000002, z: 1.0000002}
     - name: upperarm_twist_01_l
       parentName: upperarm_l
       position: {x: -0.12626831, y: -0.02234356, z: 0.0064782714}
-      rotation: {x: 0.000000029802319, y: 0.00000008940696, z: -0.00000009685753,
-        w: 1}
+      rotation: {x: 0.000000029802319, y: 0.00000008940696, z: -0.00000009685753, w: 1}
       scale: {x: 1.0000001, y: 1, z: 1.0000004}
     - name: breast_l
       parentName: spine_03
@@ -822,8 +829,7 @@ ModelImporter:
     - name: thumb_03_r
       parentName: thumb_02_r
       position: {x: -0.030162811, y: -0.0009351349, z: 0.00016860962}
-      rotation: {x: 0.00000017881406, y: -0.00000003352806, z: -0.00000014156082,
-        w: 1}
+      rotation: {x: 0.00000017881406, y: -0.00000003352806, z: -0.00000014156082, w: 1}
       scale: {x: 1.0000017, y: 1.0000092, z: 0.9999902}
     - name: index_01_r
       parentName: hand_r
@@ -1093,15 +1099,9 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 1
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 0
   remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 283633
-  packageName: Female Civilian
-  packageVersion: 1.0
-  assetPath: Assets/civilian_girl/Models/civilian_girl.FBX
-  uploadId: 660411
