@@ -10,8 +10,9 @@ public class EnterCar : MonoBehaviour
     [Header("Car side")]
     public float enterDistance = 4f;
 
-    private GameObject car;
-    private CarController carController;
+    public GameObject car;
+    private OffRoadWheelCarController carController;
+
     private Camera carCamera;
     private AudioListener fpsListener;
     private AudioListener carListener;
@@ -31,6 +32,7 @@ public class EnterCar : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
         {
+            Debug.Log("E key pressed. In car: " + inCar);
             if (!inCar)
                 TryEnter();
             else
@@ -62,14 +64,15 @@ public class EnterCar : MonoBehaviour
 
     void TryFindCar()
     {
+        //Debug.Log("Trying to find car... " + (car != null ? "Car already assigned: " + car.name : "Car not assigned"));
         if (car != null && carController != null && carCamera != null)
             return;
 
-        car = GameObject.FindWithTag("Car");
-        if (car == null)
-            return;
+        //car = GameObject.FindWithTag("Car");
+        //if (car == null)
+            //return;
 
-        carController = car.GetComponent<CarController>();
+        carController = car.GetComponent<OffRoadWheelCarController>();
         carCamera = FindNamedCamera(car, "CarCamera");
 
         if (carCamera != null)
