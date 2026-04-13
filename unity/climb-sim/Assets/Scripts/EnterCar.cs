@@ -139,7 +139,7 @@ public class EnterCar : MonoBehaviour
         // Enable car movement
         carController.canDrive = true;
 
-        Debug.Log($"Entered car. Cameras active: {Camera.allCamerasCount}");
+        Debug.Log($"Entered car. car transform: {car.transform.position}, player transform: {fpsControllerRoot.transform.position}. Cameras active: {Camera.allCamerasCount}");
     }
 
     void ExitVehicle()
@@ -155,13 +155,16 @@ public class EnterCar : MonoBehaviour
         carCamera.enabled = false;
         if (carListener != null) carListener.enabled = false;
 
-        // Re-enable FPS movement
-        SetFPSControlsEnabled(true);
+        
 
         // Move player beside car
         fpsControllerRoot.transform.position = car.transform.position + car.transform.right * 2f;
+        fpsCamera.transform.position = fpsControllerRoot.transform.position + Vector3.up * 1.5f;
 
-        Debug.Log($"Exited car. Cameras active: {Camera.allCamerasCount}");
+        Debug.Log($"Exited car. car transform: {car.transform.position}, player transform: {fpsControllerRoot.transform.position}. Cameras active: {Camera.allCamerasCount}");
+
+        // Re-enable FPS movement
+        SetFPSControlsEnabled(true);
     }
 
     void SetFPSControlsEnabled(bool enabledState)
