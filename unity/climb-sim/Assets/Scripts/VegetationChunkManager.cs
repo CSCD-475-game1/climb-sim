@@ -4,9 +4,14 @@ using UnityEngine;
 public class VegetationChunkManager : MonoBehaviour
 {
     public Transform player;
-    public GameObject grassPrefab;
-    public GameObject rocksPrefab;
-    public GameObject treePrefab;
+    public OffRoadWheelCarController playerCar;
+
+    public GameObject grassPrefab1;
+    public GameObject grassPrefab2;
+    public GameObject rocksPrefab1;
+    public GameObject rocksPrefab2;
+    public GameObject treePrefab1;
+    public GameObject treePrefab2;
 
     public int chunkSize = 20;
     public int loadRadius = 1;
@@ -29,7 +34,18 @@ public class VegetationChunkManager : MonoBehaviour
 
     void UpdateChunks(bool force = false)
     {
-        if (player == null || grassPrefab == null) return;
+        if (player == null || 
+                grassPrefab1 == null || 
+                grassPrefab2 == null ||
+                rocksPrefab1 == null ||
+                rocksPrefab2 == null ||
+                treePrefab1 == null ||
+                treePrefab2 == null 
+            ) return;
+
+        if (playerCar != null && playerCar.canDrive) {
+            player = playerCar.transform;
+        }
 
         Vector2Int newChunk = WorldToChunk(player.position);
 
@@ -136,34 +152,67 @@ public class VegetationChunkManager : MonoBehaviour
 
                 // random choice of grass or rock
                 float rand = Random.value;
-                if (Random.value < 0.4f)
+                if (rand < 0.6f)
                 {
-                    GameObject grass = Instantiate(
-                        grassPrefab,
-                        hit.point + Vector3.up * yOffset,
-                        Quaternion.Euler(0f, Random.Range(0f, 360f), 0f),
-                        transform
-                    );
-                    envObjects.Add(grass);
-                } else if (Random.value < 0.7f) {
-                         
-                    GameObject rock = Instantiate(
-                        rocksPrefab,
-                        hit.point + Vector3.up * yOffset,
-                        Quaternion.Euler(0f, Random.Range(0f, 360f), 0f),
-                        transform
-                    );
-                    envObjects.Add(rock);
+                    if (Random.value < 0.7f)
+                    {
+                        GameObject grass = Instantiate(
+                            grassPrefab1,
+                            hit.point + Vector3.up * yOffset,
+                            Quaternion.Euler(0f, Random.Range(0f, 360f), 0f),
+                            transform
+                        );
+                        envObjects.Add(grass);
+                    } else {
+                        GameObject grass = Instantiate(
+                            grassPrefab2,
+                            hit.point + Vector3.up * yOffset,
+                            Quaternion.Euler(0f, Random.Range(0f, 360f), 0f),
+                            transform
+                        );
+                        envObjects.Add(grass);
+                    }
+                } else if (rand < 0.85f) {
+
+                    if (Random.value < 0.7f)
+                    {
+                        GameObject rock = Instantiate(
+                            rocksPrefab1,
+                            hit.point + Vector3.up * yOffset,
+                            Quaternion.Euler(0f, Random.Range(0f, 360f), 0f),
+                            transform
+                        );
+                        envObjects.Add(rock);
+                    } else {
+                        GameObject rock = Instantiate(
+                            rocksPrefab2,
+                            hit.point + Vector3.up * yOffset,
+                            Quaternion.Euler(0f, Random.Range(0f, 360f), 0f),
+                            transform
+                        );
+                        envObjects.Add(rock);
+                    }
                 }
                 else
                 {
-                    GameObject tree = Instantiate(
-                        treePrefab,
-                        hit.point + Vector3.up * yOffset,
-                        Quaternion.Euler(0f, Random.Range(0f, 360f), 0f),
-                        transform
-                    );
-                    envObjects.Add(tree);
+                    if (Random.value < 0.7f)
+                    {
+                        GameObject tree = Instantiate(
+                            treePrefab1,
+                            hit.point + Vector3.up * yOffset,
+                            Quaternion.Euler(0f, Random.Range(0f, 360f), 0f),
+                            transform
+                        );
+                        envObjects.Add(tree);
+                    } else {
+                        GameObject tree = Instantiate(
+                            treePrefab2,
+                            hit.point + Vector3.up * yOffset,
+                            Quaternion.Euler(0f, Random.Range(0f, 360f), 0f),
+                            transform
+                        );
+                        envObjects.Add(tree);
+                    }
                 }
             }
         }
