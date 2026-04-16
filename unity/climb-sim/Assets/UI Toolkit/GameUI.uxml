@@ -2,4 +2,10 @@
     <ui:VisualElement name="StaminaBackground" style="position: absolute; right: 20px; bottom: 20px; width: 180px; height: 14px; background-color: rgb(40, 40, 40); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-top-color: black; border-right-color: black; border-bottom-color: black; border-left-color: black; border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px; overflow: hidden;">
         <ui:VisualElement name="StaminaBar" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; background-color: rgb(212, 220, 0);"/>
     </ui:VisualElement>
+    <ui:VisualElement name="HealthBackground" style="position: absolute; right: 20px; bottom: 40px; width: 180px; height: 14px; background-color: rgb(40, 40, 40); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-top-color: black; border-right-color: black; border-bottom-color: black; border-left-color: black; border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px; overflow: hidden;">
+        <ui:VisualElement name="HealthBar" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; background-color: rgb(220, 2, 0);"/>
+    </ui:VisualElement>
+    <ui:VisualElement name="ThirstBackground" style="position: absolute; right: 20px; bottom: 60px; width: 180px; height: 14px; background-color: rgb(40, 40, 40); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-top-color: black; border-right-color: black; border-bottom-color: black; border-left-color: black; border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px; overflow: hidden;">
+        <ui:VisualElement name="ThirstBar" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; background-color: rgb(0, 26, 220);"/>
+    </ui:VisualElement>
 </ui:UXML>
