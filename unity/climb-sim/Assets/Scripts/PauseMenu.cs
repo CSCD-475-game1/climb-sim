@@ -6,6 +6,9 @@ public class PauseMenu : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.Instance != null && !GameManager.Instance.IsGameplayMode)
+            return; 
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             bool isCurrentlyActive = container.activeSelf;

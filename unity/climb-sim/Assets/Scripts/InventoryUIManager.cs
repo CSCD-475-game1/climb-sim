@@ -44,6 +44,9 @@ public class InventoryUIManager : MonoBehaviour
 
     private void Update()
     {
+
+        if (GameManager.Instance != null && !GameManager.Instance.IsGameplayMode)
+            return; 
         if (Input.GetKeyDown(toggleKey))
         {
             SetInventoryOpen(!_inventoryOpen);
