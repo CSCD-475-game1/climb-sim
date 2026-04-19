@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Splines;
 
 public class VegetationChunkManager : MonoBehaviour
 {
@@ -11,6 +12,11 @@ public class VegetationChunkManager : MonoBehaviour
     public GameObject grassPrefab2;
     public GameObject rocksPrefab1;
     public GameObject rocksPrefab2;
+
+    // list of tree prefabs, with logs included
+    public List<GameObject> treePrefabs; // assign in inspector, include logs here with appropriate naming or tagging
+    public GameObject logPrefab1; // assign in inspector
+
     public GameObject treePrefab1;
     public GameObject treePrefab2;
 
@@ -23,14 +29,39 @@ public class VegetationChunkManager : MonoBehaviour
     private Dictionary<Vector2Int, List<GameObject>> loadedChunks = new();
     private Vector2Int currentPlayerChunk;
 
+    [SerializeField] private SplineContainer roadSpline; 
+    [SerializeField] private int roadSampleCount = 130;
+    [SerializeField] private float minLogDistanceFromRoad = 12f;
+
+    private readonly List<Vector3> roadSamplePoints = new();
+
     void Start()
     {
+        CacheRoadSamplePoints();
         UpdateChunks(force: true);
     }
 
     void Update()
     {
         UpdateChunks();
+    }
+
+    private void CacheRoadSamplePoints()
+    {
+        roadSamplePoints.Clear();
+
+        if (roadSpline == null || roadSpline.Splines.Count == 0)
+            return;
+
+        var spline = roadSpline.Splines[0];
+
+        for (int i = 0; i < roadSampleCount; i++)
+        {
+            float t = roadSampleCount == 1 ? 0f : i / (float)(roadSampleCount - 1);
+            Vector3 localPoint = spline.EvaluatePosition(t);
+            Vector3 worldPoint = roadSpline.transform.TransformPoint(localPoint);
+            roadSamplePoints.Add(worldPoint);
+        }
     }
 
     void UpdateChunks(bool force = false)
@@ -175,7 +206,7 @@ public class VegetationChunkManager : MonoBehaviour
                         );
                         envObjects.Add(grass);
                     }
-                } else if (rand < 0.85f) {
+                } else if (rand < 0.95f) {
 
                     if (Random.value < 0.7f)
                     {
@@ -198,24 +229,76 @@ public class VegetationChunkManager : MonoBehaviour
                 }
                 else
                 {
-                    if (Random.value < 0.7f)
+                    // trees
+                    //
+                    float roll = Random.value;
+
+                    Vector3 spawnPos = hit.point + Vector3.up * yOffset;
+                    Quaternion rotation;
+                    Vector3 scale;
+
+                    float distanceToRoad = GetDistanceToRoad(hit.point);
+                    bool allowLog = distanceToRoad >= minLogDistanceFromRoad;
+                    Debug.Log($"Distance to road: {distanceToRoad:F1} (allow log: {allowLog})");
+
+                    // choose prefab from list
+                    int randIndex = Random.Range(0, treePrefabs.Count);
+                    GameObject prefabToSpawn = treePrefabs[randIndex];
+
+                    GameObject logPrefab = logPrefab1; // default log prefab, can be overridden by treePrefabs if they include logs with specific naming or tagging
+
+                    if (roll > 0.8 && allowLog)
                     {
-                        GameObject tree = Instantiate(
-                            treePrefab1,
-                            hit.point + Vector3.up * yOffset,
-                            Quaternion.Euler(0f, Random.Range(0f, 360f), 0f),
-                            transform
+                        prefabToSpawn = logPrefab; 
+                    } 
+
+                    // random yaw always
+                    float yaw = Random.Range(0f, 360f);
+
+                    // slight leaning for standing trees
+                    float leanX = 0f;
+                    float leanZ = 0f;
+
+                    // logs lie on ground
+                    if (prefabToSpawn == logPrefab && allowLog)
+                    {
+                        rotation = Quaternion.Euler(
+                            Random.Range(80f, 100f),
+                            yaw,
+                            Random.Range(-8f, 8f)
                         );
-                        envObjects.Add(tree);
-                    } else {
-                        GameObject tree = Instantiate(
-                            treePrefab2,
-                            hit.point + Vector3.up * yOffset,
-                            Quaternion.Euler(0f, Random.Range(0f, 360f), 0f),
-                            transform
-                        );
-                        envObjects.Add(tree);
+
+                        float logScale = Random.Range(0.15f, 0.5f);
+                        scale = new Vector3(logScale, logScale, logScale);
+
+                        // sink into ground a bit
+                        spawnPos.y -= 0.3f;
                     }
+                    else
+                    {
+                        // small lean
+                        leanX = Random.Range(-6f, 6f);
+                        leanZ = Random.Range(-6f, 6f);
+
+                        rotation = Quaternion.Euler(leanX, yaw, leanZ);
+
+                        // mostly normal trees, sometimes bigger
+                        float uniformScale = Random.value < 0.05f
+                            ? Random.Range(1.2f, 1.7f)   // occasional large tree
+                            : Random.Range(0.15f, 0.25f); // normal variation
+
+                        scale = new Vector3(uniformScale, uniformScale, uniformScale);
+                    }
+
+                    GameObject tree = Instantiate(
+                        prefabToSpawn,
+                        spawnPos,
+                        rotation,
+                        transform
+                    );
+
+                    tree.transform.localScale = scale;
+                    envObjects.Add(tree);
                 }
             }
         }
@@ -265,5 +348,19 @@ public class VegetationChunkManager : MonoBehaviour
 
         float trailWeight = splat[0, 0, trailLayerIndex];
         return trailWeight >= threshold;
+    }
+
+    private float GetDistanceToRoad(Vector3 worldPos)
+    {
+        float bestSqr = float.MaxValue;
+
+        foreach (Vector3 p in roadSamplePoints)
+        {
+            float sqr = (worldPos - p).sqrMagnitude;
+            if (sqr < bestSqr)
+                bestSqr = sqr;
+        }
+
+        return Mathf.Sqrt(bestSqr);
     }
 }
