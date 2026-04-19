@@ -24,6 +24,14 @@ public class ChatUIManager : MonoBehaviour
 
         if (panelGroup != null)
             panelGroup.alpha = 0.65f;
+
+        ShowSystemMessage("Welcome to the Hiking Sim!");
+        ShowSystemMessage("Press E to interact with objects.");
+        ShowSystemMessage($"Press {openChatKey} to open chat when near an NPC.");
+        ShowSystemMessage("Use WASD to move around. Space to jump.");
+        ShowSystemMessage("I for inventory.");
+        ShowSystemMessage("Press Esc to close chat.");
+        ShowSystemMessage("Enjoy your hike!");
     }
 
     private void Update()

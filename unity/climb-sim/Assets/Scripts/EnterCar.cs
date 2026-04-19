@@ -17,8 +17,14 @@ public class EnterCar : MonoBehaviour
     private AudioListener fpsListener;
     private AudioListener carListener;
 
+    public bool isUnlocked = true;
+
+    [Header("ChatUI")]
+    [SerializeField] private ChatUIManager chatUI;
+
     private bool inCar = false;
     private bool loggedCar = false;
+    private bool showingEnterPrompt = false;
 
     void Start()
     {
@@ -33,6 +39,23 @@ public class EnterCar : MonoBehaviour
 
         TryFindCar();
 
+        if (!inCar && car != null && isUnlocked)
+        {
+            float d = Vector3.Distance(fpsControllerRoot.transform.position, car.transform.position);
+
+            if (d <= enterDistance)
+            {
+                if (!showingEnterPrompt)
+                {
+                    chatUI.ShowSystemMessage("Press E to enter vehicle (Unlocked)");
+                    showingEnterPrompt = true;
+                }
+            }
+            else
+            {
+                showingEnterPrompt = false;
+            }
+        }
         if (Input.GetKeyDown(KeyCode.E))
         {
             Debug.Log("E key pressed. In car: " + inCar);
