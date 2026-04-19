@@ -4,8 +4,10 @@ using UnityEngine.UI;
 
 public class InventoryUIManager : MonoBehaviour
 {
+    [Header("References")]
+    [SerializeField] private PlayerInventory playerInventory;
+
     [Header("Inventory Layout")]
-    [SerializeField] private KeyCode toggleKey = KeyCode.I;
     [SerializeField] private int totalSlotCount = 16;
     [SerializeField] private int hotbarSlotCount = 4;
     [SerializeField] private int inventoryColumns = 4;
@@ -13,7 +15,7 @@ public class InventoryUIManager : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private KeyCode debugFillKey = KeyCode.LeftBracket;
     [SerializeField] private KeyCode debugClearKey = KeyCode.RightBracket;
-    [SerializeField] private ItemDefinition[] allItems = {};
+    [SerializeField] private ItemDefinition[] allItems = { };
 
     [Header("Visuals")]
     [SerializeField] private Vector2 hotbarSlotSize = new Vector2(100f, 100f);
@@ -25,23 +27,22 @@ public class InventoryUIManager : MonoBehaviour
     [SerializeField] private Color selectedBorderColor = new Color(1f, 1f, 1f, 0.70f);
     [SerializeField] private Color textColor = new Color(1f, 1f, 1f, 0.85f);
 
-    private readonly List<InventorySlotData> _slotData = new();
     private readonly List<SlotVisual> _hotbarViews = new();
     private readonly List<SlotVisual> _inventoryViews = new();
 
     private Canvas _canvas;
     private GameObject _inventoryPanel;
     private bool _inventoryOpen;
-    private int _selectedHotbarIndex;
     private Font _uiFont;
     private CursorLockMode _previousLockState;
     private bool _previousCursorVisible;
     private bool _hasStoredCursorState;
 
+    private const char xMark = 'x';
+
     private void Awake()
     {
         ApplyConstraints();
-        EnsureSlotData();
         BuildUI();
         SetInventoryOpen(false);
         RefreshAllViews();
@@ -49,115 +50,32 @@ public class InventoryUIManager : MonoBehaviour
 
     private void Update()
     {
-
         if (GameManager.Instance != null && !GameManager.Instance.IsGameplayMode)
-            return; 
-        if (Input.GetKeyDown(toggleKey))
-            SetInventoryOpen(!_inventoryOpen);
-
-        if (_inventoryOpen && Input.GetKeyDown(KeyCode.Escape))
-            SetInventoryOpen(false);
-
-        HandleHotbarSelection();
+            return;
 
         if (Input.GetKeyDown(debugFillKey)) DebugFillInventory();
         if (Input.GetKeyDown(debugClearKey)) DebugClearInventory();
     }
 
-    // --- Debug ---
-
     private void DebugFillInventory()
     {
+        if (playerInventory == null) return;
+
         foreach (ItemDefinition item in allItems)
-            AddItem(item);
+            playerInventory.AddItem(item);
     }
 
     private void DebugClearInventory()
     {
-        foreach (InventorySlotData slot in _slotData)
-        {
-            slot.item = null;
-            slot.amount = 0;
-        }
-        RefreshAllViews();
+        if (playerInventory == null) return;
+        playerInventory.ClearAll();
     }
-
-    // --- Public API ---
-
-    public bool AddItem(ItemDefinition itemDef, int amount = 1)
-    {
-        if (itemDef == null || amount < 1) return false;
-
-        for (int i = 0; i < _slotData.Count; i++)
-        {
-            if (_slotData[i].item == itemDef)
-            {
-                _slotData[i].amount += amount;
-                RefreshAllViews();
-                return true;
-            }
-        }
-
-        for (int i = 0; i < _slotData.Count; i++)
-        {
-            if (_slotData[i].item == null)
-            {
-                _slotData[i].item = itemDef;
-                _slotData[i].amount = amount;
-                RefreshAllViews();
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public bool RemoveItem(ItemDefinition itemDef, int amount = 1)
-    {
-        if (itemDef == null || amount < 1) return false;
-
-        for (int i = 0; i < _slotData.Count; i++)
-        {
-            if (_slotData[i].item == itemDef)
-            {
-                _slotData[i].amount -= amount;
-                if (_slotData[i].amount <= 0)
-                {
-                    _slotData[i].item = null;
-                    _slotData[i].amount = 0;
-                }
-                RefreshAllViews();
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public ItemDefinition GetSelectedItem() => _slotData[_selectedHotbarIndex].item;
-
-    public ItemDefinition GetSlotItem(int slotIndex)
-    {
-        if (slotIndex < 0 || slotIndex >= _slotData.Count) return null;
-        return _slotData[slotIndex].item;
-    }
-
-    // --- Private ---
 
     private void ApplyConstraints()
     {
         if (hotbarSlotCount < 1) hotbarSlotCount = 1;
         if (totalSlotCount < hotbarSlotCount) totalSlotCount = hotbarSlotCount;
         if (inventoryColumns < 1) inventoryColumns = 1;
-        _selectedHotbarIndex = Mathf.Clamp(_selectedHotbarIndex, 0, hotbarSlotCount - 1);
-    }
-
-    private void EnsureSlotData()
-    {
-        while (_slotData.Count < totalSlotCount)
-            _slotData.Add(new InventorySlotData());
-        while (_slotData.Count > totalSlotCount)
-            _slotData.RemoveAt(_slotData.Count - 1);
     }
 
     private void BuildUI()
@@ -214,7 +132,6 @@ public class InventoryUIManager : MonoBehaviour
         panelRect.anchorMin = new Vector2(0.5f, 0.5f);
         panelRect.anchorMax = new Vector2(0.5f, 0.5f);
         panelRect.pivot = new Vector2(0.5f, 0.5f);
-        // Width: 2*18 padding + 4*100 slots + 3*10 spacing = 466
         panelRect.sizeDelta = new Vector2(466f, 360f);
         panelRect.anchoredPosition = Vector2.zero;
 
@@ -354,21 +271,6 @@ public class InventoryUIManager : MonoBehaviour
         return gameObject;
     }
 
-    private void HandleHotbarSelection()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) HotbarSelect(0);
-        else if (Input.GetKeyDown(KeyCode.Alpha2) && hotbarSlotCount >= 2) HotbarSelect(1);
-        else if (Input.GetKeyDown(KeyCode.Alpha3) && hotbarSlotCount >= 3) HotbarSelect(2);
-        else if (Input.GetKeyDown(KeyCode.Alpha4) && hotbarSlotCount >= 4) HotbarSelect(3);
-    }
-
-    private void HotbarSelect(int index)
-    {
-        if (index < 0 || index >= hotbarSlotCount) return;
-        _selectedHotbarIndex = index;
-        RefreshAllViews();
-    }
-
     private void SetInventoryOpen(bool open)
     {
         _inventoryOpen = open;
@@ -404,14 +306,24 @@ public class InventoryUIManager : MonoBehaviour
 
     private void RefreshSlotView(SlotVisual view)
     {
-        bool isSelected = view.slotIndex == _selectedHotbarIndex && view.slotIndex < hotbarSlotCount;
+        if (playerInventory == null)
+        {
+            view.background.color = slotColor;
+            view.outline.effectColor = slotBorderColor;
+            view.icon.enabled = false;
+            view.itemLabel.text = string.Empty;
+            view.keyLabel.text = GetKeyLabel(view.slotIndex);
+            return;
+        }
+
+        bool isSelected = view.slotIndex == playerInventory.GetSelectedHotbarIndex() && view.slotIndex < hotbarSlotCount;
         view.background.color = isSelected ? selectedSlotColor : slotColor;
         view.outline.effectColor = isSelected ? selectedBorderColor : slotBorderColor;
         view.keyLabel.text = GetKeyLabel(view.slotIndex);
 
-        InventorySlotData data = _slotData[view.slotIndex];
+        PlayerInventory.InventorySlotData data = playerInventory.GetSlotData(view.slotIndex);
 
-        if (data.item == null)
+        if (data == null || data.item == null)
         {
             view.icon.enabled = false;
             view.itemLabel.text = string.Empty;
@@ -436,14 +348,6 @@ public class InventoryUIManager : MonoBehaviour
         return slotIndex < hotbarSlotCount ? (slotIndex + 1).ToString() : string.Empty;
     }
 
-    private const char xMark = 'x';
-
-    private class InventorySlotData
-    {
-        public ItemDefinition item = null;
-        public int amount = 0;
-    }
-
     private class SlotVisual
     {
         public int slotIndex;
@@ -453,5 +357,22 @@ public class InventoryUIManager : MonoBehaviour
         public Outline outline;
         public Text keyLabel;
         public Text itemLabel;
+    }
+
+    public void OpenInventory()
+    {
+        SetInventoryOpen(true);
+    }
+
+    public void CloseInventory()
+    {
+        SetInventoryOpen(false);
+    }
+
+    public bool IsOpen => _inventoryOpen;
+
+    public void RefreshFromInventory()
+    {
+        RefreshAllViews();
     }
 }
