@@ -28,6 +28,9 @@ public class EnterCar : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.Instance != null && !GameManager.Instance.IsGameplayMode)
+            return; 
+
         TryFindCar();
 
         if (Input.GetKeyDown(KeyCode.E))
@@ -146,27 +149,38 @@ public class EnterCar : MonoBehaviour
     {
         inCar = false;
 
-        // Re-enable FPS view first
-        fpsCamera.enabled = true;
-        if (fpsListener != null) fpsListener.enabled = true;
-
-        // Disable car view
+        // Disable car control/view
         carController.canDrive = false;
-        carCamera.enabled = false;
+        if (carCamera != null) carCamera.enabled = false;
         if (carListener != null) carListener.enabled = false;
 
-        
+        // Keep FPS controls off while repositioning
+        SetFPSControlsEnabled(false);
 
-        // Move player beside car
-        fpsControllerRoot.transform.position = car.transform.position + car.transform.right * 2f;
-        fpsCamera.transform.position = fpsControllerRoot.transform.position + Vector3.up * 1.5f;
+        CharacterController cc = fpsControllerRoot.GetComponent<CharacterController>();
+        if (cc != null) cc.enabled = false;
 
-        Debug.Log($"Exited car. car transform: {car.transform.position}, player transform: {fpsControllerRoot.transform.position}. Cameras active: {Camera.allCamerasCount}");
+        // Put player beside car, slightly offset upward to avoid ground clipping
+        Vector3 exitPos = car.transform.position + car.transform.right * 4f + Vector3.up * 0.25f;
+        fpsControllerRoot.transform.position = exitPos;
 
-        // Re-enable FPS movement
+        // Optional: face same direction as car
+        Vector3 flatForward = car.transform.forward;
+        flatForward.y = 0f;
+        if (flatForward.sqrMagnitude > 0.001f)
+            fpsControllerRoot.transform.rotation = Quaternion.LookRotation(flatForward);
+
+        if (cc != null) cc.enabled = true;
+
+        // Re-enable FPS view
+        if (fpsCamera != null) fpsCamera.enabled = true;
+        if (fpsListener != null) fpsListener.enabled = true;
+
+        // Re-enable FPS controls last
         SetFPSControlsEnabled(true);
-    }
 
+        Debug.Log($"Exited car. car transform: {car.transform.position}, player transform: {fpsControllerRoot.transform.position}");
+    }
     void SetFPSControlsEnabled(bool enabledState)
     {
         if (fpsBehavioursToDisable == null) return;
