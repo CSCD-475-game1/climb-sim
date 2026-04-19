@@ -219,17 +219,23 @@ public class InventoryUIManager : MonoBehaviour
         keyRect.sizeDelta = new Vector2(30f, 20f);
         keyLabel.color = new Color(textColor.r, textColor.g, textColor.b, 0.95f);
 
-        Text itemLabel = CreateText("ItemLabel", slotObject.transform, string.Empty, 14, FontStyle.Normal, TextAnchor.MiddleCenter);
+        Text itemLabel = CreateText("ItemLabel", slotObject.transform, string.Empty, 28, FontStyle.Bold, TextAnchor.LowerRight);
         RectTransform itemRect = itemLabel.rectTransform;
-        itemRect.anchorMin = new Vector2(0.5f, 0.5f);
-        itemRect.anchorMax = new Vector2(0.5f, 0.5f);
-        itemRect.pivot = new Vector2(0.5f, 0.5f);
-        itemRect.anchoredPosition = new Vector2(0f, 4f);
-        itemRect.sizeDelta = new Vector2(size.x - 16f, size.y - 16f);
-        itemLabel.color = new Color(textColor.r, textColor.g, textColor.b, 0.75f);
-        itemLabel.horizontalOverflow = HorizontalWrapMode.Wrap;
-        itemLabel.verticalOverflow = VerticalWrapMode.Overflow;
 
+        // bottom-right corner
+        itemRect.anchorMin = new Vector2(1f, 0f);
+        itemRect.anchorMax = new Vector2(1f, 0f);
+        itemRect.pivot = new Vector2(1f, 0f);
+        itemRect.anchoredPosition = new Vector2(-8f, 8f);
+        itemRect.sizeDelta = new Vector2(60f, 40f);
+
+        // high contrast yellow
+        itemLabel.color = new Color(1f, 0.95f, 0.2f, 1f);
+
+        // add outline for readability
+        Outline textOutline = itemLabel.gameObject.AddComponent<Outline>();
+        textOutline.effectColor = new Color(0f, 0f, 0f, 0.9f);
+        textOutline.effectDistance = new Vector2(2f, -2f);
         return new SlotVisual
         {
             slotIndex = slotIndex,
@@ -332,7 +338,18 @@ public class InventoryUIManager : MonoBehaviour
         {
             view.icon.sprite = data.item.icon;
             view.icon.enabled = true;
-            view.itemLabel.text = data.amount > 1 ? $"{xMark}{data.amount}" : string.Empty;
+            if (data.usesRemaining > 0)
+            {
+                view.itemLabel.text = $"{data.usesRemaining}";
+            }
+            else if (data.amount > 1)
+            {
+                view.itemLabel.text = $"{xMark}{data.amount}";
+            }
+            else
+            {
+                view.itemLabel.text = string.Empty;
+            }
         }
         else
         {
