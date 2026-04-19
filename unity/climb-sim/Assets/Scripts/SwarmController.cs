@@ -12,6 +12,17 @@ public class SwarmController : MonoBehaviour
     private Transform target;
     private float forgetTimer;
 
+    [Header("ChatUI")]
+    [SerializeField] private ChatUIManager chatUI;
+
+    private ParticleSystem ps;
+
+    private void Awake()
+    {
+        ps = GetComponentInChildren<ParticleSystem>();
+    }
+
+
     void Update()
     {
         if (target != null)
@@ -54,7 +65,7 @@ public class SwarmController : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Swarm detected player!");
+            //Debug.Log("Swarm detected player!");
             target = other.transform;
             //forgetTimer = forgetAfterSeconds;
         }
@@ -74,5 +85,15 @@ public class SwarmController : MonoBehaviour
         //{
             //forgetTimer = 2f; // brief pursuit after leaving trigger
         //}
+    }
+
+    public void Repel()
+    {
+        if (ps == null) return;
+
+        var emission = ps.emission;
+
+        float current = emission.rateOverTime.constant;
+        emission.rateOverTime = current * 0.5f; // half emission rate when repelled 
     }
 }

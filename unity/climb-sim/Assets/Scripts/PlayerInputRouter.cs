@@ -2,30 +2,32 @@ using UnityEngine;
 
 public class PlayerInputRouter : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] private ChatUIManager chatUI;
     [SerializeField] private InventoryUIManager inventoryUI;
+    [SerializeField] private PlayerInventory playerInventory;
 
-    void Start()
+    private void Start()
     {
         if (chatUI == null)
-        {
             Debug.LogError("ChatUIManager reference is missing in PlayerInputRouter.");
-        }
 
         if (inventoryUI == null)
-        {
             Debug.LogError("InventoryUIManager reference is missing in PlayerInputRouter.");
-        }
 
-        // Ensure we start in Gameplay mode
-        GameInputModeManager.Instance.SetMode(GameInputModeManager.InputMode.Gameplay);
+        if (playerInventory == null)
+            Debug.LogError("PlayerInventory reference is missing in PlayerInputRouter.");
+
+        if (GameInputModeManager.Instance != null)
+            GameInputModeManager.Instance.SetMode(GameInputModeManager.InputMode.Gameplay);
     }
 
-    void Update()
+    private void Update()
     {
-        var mode = GameInputModeManager.Instance.CurrentMode;
+        if (GameInputModeManager.Instance == null)
+            return;
 
-        switch (mode)
+        switch (GameInputModeManager.Instance.CurrentMode)
         {
             case GameInputModeManager.InputMode.Gameplay:
                 HandleGameplayInput();
@@ -41,34 +43,79 @@ public class PlayerInputRouter : MonoBehaviour
         }
     }
 
-    void HandleGameplayInput()
+    private void HandleGameplayInput()
     {
-        if (GameManager.Instance.IsGameplayMode && Input.GetKeyDown(KeyCode.C))
+        HandleHotbarNumberInput();
+
+        if (Input.GetKeyDown(KeyCode.F))
         {
+            if (playerInventory != null)
+                playerInventory.UseSelectedItem();
+        }
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            if (chatUI != null)
+                chatUI.OpenChat();
+
             GameInputModeManager.Instance.SetMode(GameInputModeManager.InputMode.Chat);
-            chatUI.OpenChat();
+            return;
         }
-        else if (GameManager.Instance.IsChatMode && Input.GetKeyDown(KeyCode.Escape))
+
+        if (Input.GetKeyDown(KeyCode.I))
         {
+            if (inventoryUI != null)
+                inventoryUI.OpenInventory();
+
+            GameInputModeManager.Instance.SetMode(GameInputModeManager.InputMode.Inventory);
+            return;
+        }
+        if (inventoryUI != null)
+            inventoryUI.RefreshFromInventory();
+    }
+
+    private void HandleChatInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.C))
+        {
+            if (chatUI != null)
+                chatUI.CloseChat();
+
             GameInputModeManager.Instance.SetMode(GameInputModeManager.InputMode.Gameplay);
-            chatUI.CloseChat();
         }
-        // movement is allowed here
     }
 
-    void HandleChatInput()
+    private void HandleInventoryInput()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        HandleHotbarNumberInput();
+
+        if (Input.GetKeyDown(KeyCode.F))
         {
-            chatUI.CloseChat();
+            if (playerInventory != null)
+                playerInventory.UseSelectedItem();
         }
-    }
 
-    void HandleInventoryInput()
-    {
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.I))
         {
-            //inventoryUI.CloseInventory();
+            if (inventoryUI != null)
+                inventoryUI.CloseInventory();
+
+            GameInputModeManager.Instance.SetMode(GameInputModeManager.InputMode.Gameplay);
         }
+    }
+
+    private void HandleHotbarNumberInput()
+    {
+        if (playerInventory == null)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            playerInventory.SelectHotbar(0);
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+            playerInventory.SelectHotbar(1);
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+            playerInventory.SelectHotbar(2);
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+            playerInventory.SelectHotbar(3);
     }
 }
