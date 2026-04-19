@@ -5,6 +5,7 @@ public class VegetationChunkManager : MonoBehaviour
 {
     public Transform player;
     public OffRoadWheelCarController playerCar;
+    private Transform playerPosTransform;
 
     public GameObject grassPrefab1;
     public GameObject grassPrefab2;
@@ -44,10 +45,12 @@ public class VegetationChunkManager : MonoBehaviour
             ) return;
 
         if (playerCar != null && playerCar.canDrive) {
-            player = playerCar.transform;
+            playerPosTransform = playerCar.transform;
+        } else {
+            playerPosTransform = player;
         }
 
-        Vector2Int newChunk = WorldToChunk(player.position);
+        Vector2Int newChunk = WorldToChunk(playerPosTransform.position);
 
         if (!force && newChunk == currentPlayerChunk)
             return;
