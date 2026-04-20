@@ -239,7 +239,7 @@ public class VegetationChunkManager : MonoBehaviour
 
                     float distanceToRoad = GetDistanceToRoad(hit.point);
                     bool allowLog = distanceToRoad >= minLogDistanceFromRoad;
-                    Debug.Log($"Distance to road: {distanceToRoad:F1} (allow log: {allowLog})");
+                    //Debug.Log($"Distance to road: {distanceToRoad:F1} (allow log: {allowLog})");
 
                     // choose prefab from list
                     int randIndex = Random.Range(0, treePrefabs.Count);

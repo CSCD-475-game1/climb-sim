@@ -151,6 +151,10 @@ public class EnterCar : MonoBehaviour
     {
         inCar = true;
 
+        Vector3 enterPos = car.transform.position + car.transform.right * 4f + Vector3.up * 0.25f;
+        fpsControllerRoot.transform.position = enterPos;
+
+
         // Enable car view first
         carCamera.enabled = true;
         if (carListener != null) carListener.enabled = true;
@@ -164,6 +168,8 @@ public class EnterCar : MonoBehaviour
 
         // Enable car movement
         carController.canDrive = true;
+
+
 
         Debug.Log($"Entered car. car transform: {car.transform.position}, player transform: {fpsControllerRoot.transform.position}. Cameras active: {Camera.allCamerasCount}");
     }
