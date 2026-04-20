@@ -11,6 +11,7 @@ public class SwarmController : MonoBehaviour
 
     private Transform target;
     private float forgetTimer;
+    private Transform playerRoot;
 
     [Header("ChatUI")]
     [SerializeField] private ChatUIManager chatUI;
@@ -24,10 +25,9 @@ public class SwarmController : MonoBehaviour
     [Header("Audio")]
     [SerializeField] private MosquitoBuzzSynth buzzSynth;
     [SerializeField] private AudioSource buzzAudio;
-    [SerializeField] private float maxBuzzVolume = 0.35f;
+    [SerializeField] private float maxBuzzVolume = 0.15f;
 
-    [Header("Player Proximity")]
-    [SerializeField] private Transform playerRoot;
+    [Header("Buzz Distance")]
     [SerializeField] private float fullBuzzDistance = 4f;
     [SerializeField] private float silentBuzzDistance = 18f;
     [SerializeField] private float buzzLerpSpeed = 5f;
@@ -46,12 +46,7 @@ public class SwarmController : MonoBehaviour
         if (buzzAudio == null)
             buzzAudio = GetComponent<AudioSource>();
 
-        if (playerRoot == null)
-        {
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (playerObj != null)
-                playerRoot = playerObj.transform;
-        }
+        FindPlayerByTag();
 
         if (ps != null)
         {
@@ -75,10 +70,20 @@ public class SwarmController : MonoBehaviour
 
     private void Update()
     {
+        if (playerRoot == null)
+            FindPlayerByTag();
+
         if (target != null)
             FollowTarget();
 
         UpdateBuzzVolume();
+    }
+
+    void FindPlayerByTag()
+    {
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+            playerRoot = playerObj.transform;
     }
 
     void FollowTarget()
