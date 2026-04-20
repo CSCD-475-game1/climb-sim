@@ -6,6 +6,7 @@ public class RiverAmbientController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private SplineContainer riverSpline;
+    [SerializeField] private SplineContainer riverSpline2;
     [SerializeField] private Transform player;
     [SerializeField] private AudioSource audioSource;
 
@@ -67,6 +68,17 @@ public class RiverAmbientController : MonoBehaviour
 
         if (riverSpline == null || riverSpline.Splines.Count == 0)
             return;
+        if (riverSpline2 != null && riverSpline2.Splines.Count > 0)
+        {
+            var spline2 = riverSpline2.Splines[0];
+            for (int i = 0; i < sampleCount; i++)
+            {
+                float t = sampleCount == 1 ? 0f : i / (float)(sampleCount - 1);
+                Vector3 localPoint = spline2.EvaluatePosition(t);
+                Vector3 worldPoint = riverSpline2.transform.TransformPoint(localPoint);
+                samplePoints.Add(worldPoint);
+            }
+        }
 
         var spline = riverSpline.Splines[0];
 
