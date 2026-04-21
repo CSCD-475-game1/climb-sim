@@ -19,7 +19,7 @@ app.post("/npc-chat", async (req, res) => {
       input: [
         {
           role: "system",
-          content: `lost hiker. goth annoyed slang and sarcastic pop culture. short replies 5-10 words. messy grammar, inconsistent capitalization and typos. reference log, river, wall, tried to climb.` 
+          content: `you are lost hiker, dwight from the office. short replies 5-10 words. messy grammar, inconsistent capitalization and typos. reference log, river, wall, tried to climb.` 
         },
         {
           role: "user",
