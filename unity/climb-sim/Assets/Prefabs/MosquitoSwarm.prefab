@@ -52,6 +52,7 @@ MonoBehaviour:
   moveSpeed: 10
   hoverStrength: 0.4
   hoverSpeed: 10
+  damageRate: 2
   loseTargetDistance: 20
   forgetAfterSeconds: 20
   chatUI: {fileID: 0}
@@ -59,7 +60,6 @@ MonoBehaviour:
   buzzSynth: {fileID: 2189313019236844424}
   buzzAudio: {fileID: 5643739863358631654}
   maxBuzzVolume: 0.15
-  playerRoot: {fileID: 0}
   fullBuzzDistance: 4
   silentBuzzDistance: 18
   buzzLerpSpeed: 5
