@@ -76,7 +76,7 @@ public class PlayerInputRouter : MonoBehaviour
 
     private void HandleChatInput()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.C))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (chatUI != null)
                 chatUI.CloseChat();

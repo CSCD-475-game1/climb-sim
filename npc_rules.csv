@@ -1,0 +1,5 @@
+npc,pattern,reply
+Hiker,where|go|direction,Head uphill and look for the fallen log.
+Hiker,river|water,Stay out of the water. Cross at the log.
+Hiker,lost|help,I think you're near the trail. Keep moving uphill.
+Ranger,where|go,Follow the marked trail north.
