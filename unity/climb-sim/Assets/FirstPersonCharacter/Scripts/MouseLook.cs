@@ -29,6 +29,12 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         public void LookRotation(Transform character, Transform camera)
         {
+
+        if (Mathf.Approximately(Time.timeScale, 0f))
+        {
+            return;
+        }
+
             float yRot = Input.GetAxis("Mouse X") * XSensitivity;
             float xRot = Input.GetAxis("Mouse Y") * YSensitivity;
 

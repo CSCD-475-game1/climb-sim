@@ -31,6 +31,24 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1f;
     }
 
+    private void PauseGame()
+    {
+        container.SetActive(true);
+        Time.timeScale = 0f;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    private void ResumeGame()
+    {
+        container.SetActive(false);
+        Time.timeScale = 1f;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
     public void RestartButton()
     {
         // Add logic here later
