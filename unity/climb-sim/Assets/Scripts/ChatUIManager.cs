@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class ChatUIManager : MonoBehaviour
 {
@@ -15,7 +16,8 @@ public class ChatUIManager : MonoBehaviour
     [SerializeField] private KeyCode openChatKey = KeyCode.C;
 
 
-    private NpcDialogueTarget currentNpc;
+    [SerializeField] private NpcDialogueTarget currentNpc;
+    private bool awaitingReply;
 
     private void Start()
     {
@@ -62,6 +64,19 @@ public class ChatUIManager : MonoBehaviour
         inputField.Select();
     }
 
+    public void OpenChat(NpcDialogueTarget npc)
+    {
+        currentNpc = npc;
+        GameManager.Instance.SetMode(GameManager.PlayerMode.Chat);
+
+        inputField.gameObject.SetActive(true);
+        inputField.text = "";
+        inputField.ActivateInputField();
+        inputField.Select();
+
+        ShowSystemMessage($"Chat opened with {npc.DisplayName}.");
+    }
+
     public void CloseChat()
     {
         inputField.text = "";
@@ -95,6 +110,9 @@ public class ChatUIManager : MonoBehaviour
         if (!GameManager.Instance.IsChatMode)
             return;
 
+        if (awaitingReply)
+            return;
+
         string trimmed = text.Trim();
         if (string.IsNullOrEmpty(trimmed))
             return;
@@ -103,10 +121,40 @@ public class ChatUIManager : MonoBehaviour
 
         inputField.text = "";
         inputField.ActivateInputField();
+        inputField.Select();
 
-        Canvas.ForceUpdateCanvases();
-        scrollRect.verticalNormalizedPosition = 0f;
+        if (currentNpc == null)
+        {
+            ShowSystemMessage("No NPC is connected to this chat.");
+            return;
+        }
+
+        StartCoroutine(RequestNpcReplyRoutine(trimmed));
     }
+
+    private IEnumerator RequestNpcReplyRoutine(string playerText)
+    {
+        awaitingReply = true;
+
+        string npcName = currentNpc != null ? currentNpc.DisplayName : "Hiker";
+
+        ShowSystemMessage($"{npcName} is typing...");
+
+        yield return StartCoroutine(
+            NpcChatService.Instance.GetReply(playerText, npcName, (reply) =>
+            {
+                ShowNpcMessage(npcName, reply);
+            })
+        );
+        awaitingReply = false;
+
+        //Canvas.ForceUpdateCanvases();
+        //scrollRect.verticalNormalizedPosition = 0f;
+
+        inputField.ActivateInputField();
+        inputField.Select();
+    }
+
 
     private void AddMessage(string text)
     {
@@ -116,7 +164,22 @@ public class ChatUIManager : MonoBehaviour
         if (label != null)
             label.text = text;
 
+        //Canvas.ForceUpdateCanvases();
+        //scrollRect.verticalNormalizedPosition = 0f;
+
+        StartCoroutine(ScrollToBottomRoutine());
+    }
+
+
+    private IEnumerator ScrollToBottomRoutine()
+    {
+        yield return null;
+        yield return null;
+
         Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(contentRoot);
+
         scrollRect.verticalNormalizedPosition = 0f;
+        scrollRect.velocity = Vector2.zero;
     }
 }
