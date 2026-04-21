@@ -10,6 +10,10 @@ public class Rule
 
 public class NpcRuleEngine : MonoBehaviour
 {
+
+    [SerializeField] private float delayMin = 0.5f;
+    [SerializeField] private float delayMax = 1.5f;
+
     public static NpcRuleEngine Instance;
 
     private List<Rule> rules = new List<Rule>();
@@ -47,6 +51,7 @@ public class NpcRuleEngine : MonoBehaviour
 
     public string GetReply(string npcName, string input)
     {
+
         string lower = input.ToLower();
 
         Rule bestRule = null;
@@ -81,9 +86,17 @@ public class NpcRuleEngine : MonoBehaviour
 
         lastPlayerInput = input;
 
-        if (bestRule != null && bestScore > 0) {
+        if (bestRule != null && bestScore > 1) {
             string[] options = bestRule.reply.Split('|');
+            Debug.Log($"Best rule for '{input}' is '{bestRule.reply}' with score {bestScore}");
             return repeat + options[Random.Range(0, options.Length)];
+        } else {
+            // return random reply
+            int numRules = rules.Count;
+            int randomIndex = Random.Range(0, numRules);
+            int variations = rules[randomIndex].reply.Split('|').Length;
+            Debug.Log($"No good rule for '{input}', returning random reply '{rules[randomIndex].reply}'");
+            return rules[randomIndex].reply.Split('|')[Random.Range(0, variations)];
         }
 
         return DefaultReply(npcName);

@@ -14,6 +14,7 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] private InventoryUIManager inventoryUI;
 
     [SerializeField] private ParticleSystem deetSprayFX;
+    [SerializeField] private ParticleSystem bearSprayFX;
     
     private readonly List<InventorySlotData> slotData = new();
     private int selectedHotbarIndex = 0;
@@ -78,7 +79,11 @@ public class PlayerInventory : MonoBehaviour
                 slotData[i].item = itemDef;
                 slotData[i].amount = amount;
                 if (itemDef.displayName.ToLower().Contains("deet"))
-                    slotData[i].usesRemaining = 20;
+                    slotData[i].usesRemaining = 200;
+                if (itemDef.displayName.ToLower().Contains("bear spray"))
+                    slotData[i].usesRemaining = 100;
+                if (itemDef.displayName.ToLower().Contains("water"))
+                    slotData[i].usesRemaining = 30;
 
                 if (inventoryUI != null) inventoryUI.RefreshFromInventory();
                 return true;
@@ -143,6 +148,8 @@ public class PlayerInventory : MonoBehaviour
 
         string itemName = slot.item.displayName.ToLowerInvariant();
 
+        Debug.Log($"Attempting to use item: {itemName} in slot {selectedHotbarIndex}");
+
         if (itemName.Contains("deet"))
         {
             List<SwarmController> swarms = FindSwarmsInRange();
@@ -169,9 +176,81 @@ public class PlayerInventory : MonoBehaviour
                 chatUI.ShowSystemMessage($"Used DEET. Repelled {swarms.Count} mosquito swarm(s).");
             return;
         }
+
+        if (itemName.Contains("bear spray"))
+        { 
+            bearSprayFX.Play();
+            BearController bear = FindNearestBear();
+            Debug.Log($"Nearest bear: {(bear != null ? bear.name : "None")}");
+            if (bear != null)
+            {
+                bear.Repel();
+                if (chatUI != null)
+                    chatUI.ShowSystemMessage($"Used Bear Spray. Repelled {bear.name}.");
+            }
+            else
+            {
+                if (chatUI != null)
+                    chatUI.ShowSystemMessage("No bears in range to repel.");
+            }
+            slot.usesRemaining--;
+
+            if (slot.usesRemaining <= 0)
+            {
+                RemoveItem(slot.item, 1);
+            }
+
+            return;
+
+        }
+        else if (itemName.Contains("water"))
+        {
+            // drink water, restore Player Thurst Controller thirst by 20 points
+            ThirstController thirst = FindObjectOfType<ThirstController>();
+            if (thirst != null)            {
+                thirst.RestoreThirst(20);
+                if (chatUI != null)
+                    chatUI.ShowSystemMessage("Drank water. Restored thirst by 20 points.");
+            }
+
+            slot.usesRemaining--;
+
+            if (slot.usesRemaining <= 0)
+            {
+                RemoveItem(slot.item, 1);
+            }
+            return;
+        }
+
         if (chatUI != null)
             chatUI.ShowSystemMessage($"Can't use {slot.item.displayName} right now.");
     }
+
+    private BearController FindNearestBear()
+    {
+        // find by tag name Bear
+        GameObject[] bears = GameObject.FindGameObjectsWithTag("Bear");
+
+        if (playerRoot == null || bears.Length == 0) return null;
+
+        BearController best = null;
+        float bestDist = 100;
+
+        foreach (GameObject bearObj in bears)
+        {
+            if (!bearObj.activeInHierarchy) continue;
+
+            float d = Vector3.Distance(playerRoot.position, bearObj.transform.position);
+            if (d <= bestDist)
+            {
+                bestDist = d;
+                best = bearObj.GetComponent<BearController>();
+            }
+        }
+        return best;
+    }
+
+
     private List<SwarmController> FindSwarmsInRange()
     {
         SwarmController[] swarms = FindObjectsOfType<SwarmController>(true);

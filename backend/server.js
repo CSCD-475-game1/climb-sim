@@ -19,8 +19,7 @@ app.post("/npc-chat", async (req, res) => {
       input: [
         {
           role: "system",
-          content: `You are ${npcName}, a lost hiker texting the player.
-Give short, natural directions. Stay in character.`
+          content: `lost hiker. goth annoyed slang and sarcastic pop culture. short replies 5-10 words. messy grammar, inconsistent capitalization and typos. reference log, river, wall, tried to climb.` 
         },
         {
           role: "user",
@@ -29,7 +28,7 @@ Give short, natural directions. Stay in character.`
       ]
     });
 
-    const reply = response.output[0].content[0].text;
+    const reply = response.output_text;
 
     res.json({ reply });
   } catch (err) {

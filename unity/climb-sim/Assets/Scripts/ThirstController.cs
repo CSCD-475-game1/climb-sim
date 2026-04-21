@@ -52,6 +52,13 @@ public class ThirstController : MonoBehaviour
         UpdateThirstBar();
     }
 
+    public void RestoreThirst(float amount)
+    {
+        currentThirst += amount;
+        currentThirst = Mathf.Clamp(currentThirst, 0f, maxThirst);
+        UpdateThirstBar();
+    }
+
     void UpdateThirstBar()
     {
         if (thirstBar == null) return;

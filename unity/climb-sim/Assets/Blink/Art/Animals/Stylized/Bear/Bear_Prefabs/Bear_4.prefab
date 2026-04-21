@@ -1922,9 +1922,12 @@ GameObject:
   - component: {fileID: 3734775969355451150}
   - component: {fileID: 5332644419680609319}
   - component: {fileID: 5418647650856421275}
+  - component: {fileID: 7837994044733498564}
+  - component: {fileID: 8351465324420962061}
+  - component: {fileID: 567744427799666558}
   m_Layer: 0
   m_Name: Bear_4
-  m_TagString: Untagged
+  m_TagString: Bear
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2002,6 +2005,73 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BearAttackTrigger
   animator: {fileID: 3734775969355451150}
+--- !u!114 &7837994044733498564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7962199819078159310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d155c59d8cef344e18ef300d00f5066c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BearController
+  fleeSpeed: 4
+  fleeDuration: 3
+  turnSpeed: 6
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 8
+  rayStartHeight: 3
+  rayDistance: 10
+  groundOffset: 0.05
+--- !u!54 &8351465324420962061
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7962199819078159310}
+  serializedVersion: 5
+  m_Mass: 90
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 1
+  m_Constraints: 80
+  m_CollisionDetection: 1
+--- !u!114 &567744427799666558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7962199819078159310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdb7c55af95fb49e79b5918f7e6aefb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BearWander
+  moveSpeed: 0.6
+  turnSpeed: 2
+  directionChangeInterval: 4
+  walkRadius: 6
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!1 &8002475675295336084
 GameObject:
   m_ObjectHideFlags: 0
