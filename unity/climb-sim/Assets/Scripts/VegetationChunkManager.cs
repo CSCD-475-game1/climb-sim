@@ -212,7 +212,7 @@ public class VegetationChunkManager : MonoBehaviour
                 }
                 else 
 
-                if (rand < 0.6f)
+                if (rand < 0.8f)
                 {
                     if (Random.value < 0.7f)
                     {
@@ -232,7 +232,7 @@ public class VegetationChunkManager : MonoBehaviour
                         );
                         envObjects.Add(grass);
                     }
-                } else if (rand < 0.95f) {
+                } else if (rand < 0.90f) {
 
                     if (Random.value < 0.7f)
                     {
