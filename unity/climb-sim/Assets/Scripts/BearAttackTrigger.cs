@@ -4,19 +4,19 @@ public class BearAttackTrigger : MonoBehaviour
 {
     [SerializeField] private Animator animator;
 
-    private bool isAttacking = false;
-
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Bear attack trigger entered by: " + other.gameObject.name);
-        animator.Play("Attack1");
         
-        if (isAttacking) return;
-
         if (other.CompareTag("Player"))
         {
-            isAttacking = true;
-            animator.SetTrigger("Attack");
+            // set bear status to attacking
+            Debug.Log("Bear attack trigger entered by: " + other.gameObject.name);
+            animator.SetBool("Attack1", true);
+            PlayerHealth ph = other.GetComponentInChildren<PlayerHealth>(); 
+            if (ph != null)
+            {
+                ph.TakeDamage(20); 
+            }
         }
     }
 }

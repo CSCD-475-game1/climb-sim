@@ -8,6 +8,11 @@ public class VegetationChunkManager : MonoBehaviour
     public OffRoadWheelCarController playerCar;
     private Transform playerPosTransform;
 
+    public GameObject bearPrefab;
+    [Range(0f, 1f)] public float bearSpawnChance = 0.02f;
+    public float bearYOffset = 0.05f;
+    public Vector2 bearScaleRange = new Vector2(0.9f, 1.1f);
+
     public GameObject grassPrefab1;
     public GameObject grassPrefab2;
     public GameObject rocksPrefab1;
@@ -184,8 +189,29 @@ public class VegetationChunkManager : MonoBehaviour
                     continue; // skip grass on trail
                 }
 
-                // random choice of grass or rock
+
+                // random choice of bear or vegetation
                 float rand = Random.value;
+
+                if (bearPrefab != null && rand < bearSpawnChance)
+                {
+                    Vector3 bearPos = hit.point + Vector3.up * bearYOffset;
+                    float yaw = Random.Range(0f, 360f);
+
+                    GameObject bear = Instantiate(
+                        bearPrefab,
+                        bearPos,
+                        Quaternion.Euler(0f, yaw, 0f),
+                        transform
+                    );
+
+                    float bearScale = Random.Range(bearScaleRange.x, bearScaleRange.y);
+                    bear.transform.localScale = new Vector3(bearScale, bearScale, bearScale);
+
+                    envObjects.Add(bear);
+                }
+                else 
+
                 if (rand < 0.6f)
                 {
                     if (Random.value < 0.7f)

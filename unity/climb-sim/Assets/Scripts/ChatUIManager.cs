@@ -5,6 +5,12 @@ using System.Collections;
 
 public class ChatUIManager : MonoBehaviour
 {
+
+    [SerializeField] private AudioSource notificationAudio;
+    [SerializeField] private AudioClip messageDing;
+    [SerializeField] private float delayMin = 1.0f;
+    [SerializeField] private float delayMax = 4.0f;
+
     [Header("UI")]
     [SerializeField] private CanvasGroup panelGroup;
     [SerializeField] private ScrollRect scrollRect;
@@ -29,7 +35,7 @@ public class ChatUIManager : MonoBehaviour
 
         ShowSystemMessage("Welcome to the Hiking Sim!");
         ShowSystemMessage("Press E to interact with objects.");
-        ShowSystemMessage($"Press {openChatKey} to open chat when near an NPC.");
+        ShowSystemMessage($"Press {openChatKey} to open chat.");
         ShowSystemMessage("Use WASD to move around. Space to jump.");
         ShowSystemMessage("I for inventory.");
         ShowSystemMessage("Press Esc to close chat.");
@@ -88,12 +94,12 @@ public class ChatUIManager : MonoBehaviour
 
     public void ShowSystemMessage(string message)
     {
-        AddMessage($"<color=#B8E1FF>System:</color> {message}");
+        AddMessage($"<color=#B8E1FF>System:</color> {message}", false);
     }
 
     public void ShowNpcMessage(string npcName, string message)
     {
-        AddMessage($"<color=#FFD37A>{npcName}:</color> {message}");
+        AddMessage($"<color=#FFD37A>{npcName}:</color> {message}", true);
     }
     public void SetCurrentNpc(NpcDialogueTarget npc)
     {
@@ -104,6 +110,7 @@ public class ChatUIManager : MonoBehaviour
         else
             ShowSystemMessage("No one nearby to talk to.");
     }
+
 
     private void HandleSubmit(string text)
     {
@@ -117,7 +124,9 @@ public class ChatUIManager : MonoBehaviour
         if (string.IsNullOrEmpty(trimmed))
             return;
 
-        AddMessage($"<color=#A7FFA7>You:</color> {trimmed}");
+        AddMessage($"<color=#A7FFA7>You:</color> {trimmed}", false);
+        StartCoroutine(ScrollToBottomRoutine());
+
 
         inputField.text = "";
         inputField.ActivateInputField();
@@ -138,7 +147,13 @@ public class ChatUIManager : MonoBehaviour
 
         string npcName = currentNpc != null ? currentNpc.DisplayName : "Hiker";
 
+        float delay = Random.Range(delayMin, delayMax);
+        yield return new WaitForSeconds(delay * 3f);
+
         ShowSystemMessage($"{npcName} is typing...");
+        delay = Random.Range(delayMin, delayMax);
+        yield return new WaitForSeconds(delay);
+
 
         yield return StartCoroutine(
             NpcChatService.Instance.GetReply(playerText, npcName, (reply) =>
@@ -156,13 +171,18 @@ public class ChatUIManager : MonoBehaviour
     }
 
 
-    private void AddMessage(string text)
+    private void AddMessage(string text, bool playSound = false)
     {
         GameObject entry = Instantiate(messagePrefab, contentRoot);
         TMP_Text label = entry.GetComponent<TMP_Text>();
 
         if (label != null)
             label.text = text;
+
+        if (playSound && notificationAudio != null && messageDing != null)
+        {
+            notificationAudio.PlayOneShot(messageDing);
+        }
 
         //Canvas.ForceUpdateCanvases();
         //scrollRect.verticalNormalizedPosition = 0f;

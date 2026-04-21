@@ -7,8 +7,12 @@ public class PlayerHealth : MonoBehaviour
     private VisualElement healthBar;
 
     [Header("Settings")]
-    public float maxHealth = 100f;
-    public float health = 100f;
+    public float maxHealth;
+    public float health;
+    public float recoveryRate;
+
+    [Header("Respawn")]
+    public Transform respawnPoint;
 
     void Awake()
     {
@@ -37,6 +41,16 @@ public class PlayerHealth : MonoBehaviour
         UpdateHealthBar();
     }
 
+    void Update()
+    {
+        if (health < maxHealth)
+        {
+            health += recoveryRate * Time.deltaTime;
+            health = Mathf.Clamp(health, 0f, maxHealth);
+            UpdateHealthBar();
+        }
+    }
+
     public void TakeDamage(float amount)
     {
         health -= amount;
@@ -44,11 +58,47 @@ public class PlayerHealth : MonoBehaviour
 
         Debug.Log("Player health: " + health);
 
+        //if (DamageScreenFX.Instance != null)
+            //DamageScreenFX.Instance.PlayDamageFlash();
+
+        if (amount > 15 && CameraShake.Instance != null)
+            CameraShake.Instance.Shake();
+
         UpdateHealthBar();
 
         if (health <= 0f)
         {
             Debug.Log("Player died");
+
+            if (respawnPoint == null)
+            {
+                Debug.LogError("Respawn point is not assigned.");
+                return;
+            }
+
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player == null)
+            {
+                Debug.LogError("No GameObject with tag 'Player' found.");
+                return;
+            }
+
+            CharacterController controller = player.GetComponent<CharacterController>();
+            if (controller == null)
+            {
+                Debug.LogError("No CharacterController found on Player root.");
+                return;
+            }
+
+            controller.enabled = false;
+
+            player.transform.position = respawnPoint.position;
+            player.transform.rotation = respawnPoint.rotation;
+
+            health = maxHealth;
+            UpdateHealthBar();
+
+            controller.enabled = true;
         }
     }
 

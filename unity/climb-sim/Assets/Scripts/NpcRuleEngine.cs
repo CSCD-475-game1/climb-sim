@@ -10,6 +10,10 @@ public class Rule
 
 public class NpcRuleEngine : MonoBehaviour
 {
+
+    [SerializeField] private float delayMin = 0.5f;
+    [SerializeField] private float delayMax = 1.5f;
+
     public static NpcRuleEngine Instance;
 
     private List<Rule> rules = new List<Rule>();
@@ -47,6 +51,7 @@ public class NpcRuleEngine : MonoBehaviour
 
     public string GetReply(string npcName, string input)
     {
+
         string lower = input.ToLower();
 
         Rule bestRule = null;

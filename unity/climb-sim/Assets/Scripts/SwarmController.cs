@@ -5,6 +5,7 @@ public class SwarmController : MonoBehaviour
     public float moveSpeed = 3f;
     public float hoverStrength = 0.4f;
     public float hoverSpeed = 3f;
+    public float damageRate = 0.5f;
 
     public float loseTargetDistance = 20f;
     public float forgetAfterSeconds = 5f;
@@ -108,6 +109,20 @@ public class SwarmController : MonoBehaviour
     {
         if (other.CompareTag("Player"))
             target = other.transform;
+
+        // get PlayerHealth from target and subscribe to OnDamageTaken
+        PlayerHealth ph = other.GetComponent<PlayerHealth>();
+        // get component from children if not found on parent
+        if (ph == null) {
+            ph = other.GetComponentInChildren<PlayerHealth>();
+        }
+        if (ph != null) {
+            Debug.Log("Swarm hit player, dealing damage.");
+            ph.TakeDamage(damageRate);
+        } else {
+            Debug.LogWarning("Swarm hit player but no PlayerHealth component found.");
+        }
+
     }
 
     public void Repel()
@@ -119,6 +134,7 @@ public class SwarmController : MonoBehaviour
 
         rate.constantMin *= 0.5f;
         rate.constantMax *= 0.5f;
+        damageRate *= 0.5f;
 
         emission.rateOverTime = rate;
     }
