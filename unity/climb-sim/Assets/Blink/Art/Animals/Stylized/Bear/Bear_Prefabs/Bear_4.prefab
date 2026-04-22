@@ -1990,7 +1990,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 1.75
+  m_Radius: 4
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &5418647650856421275
 MonoBehaviour:
@@ -2017,9 +2017,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d155c59d8cef344e18ef300d00f5066c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BearController
-  fleeSpeed: 4
-  fleeDuration: 3
-  turnSpeed: 6
+  fleeSpeed: 40
+  fleeDuration: 4
+  turnSpeed: 20
   groundMask:
     serializedVersion: 2
     m_Bits: 8
@@ -2065,10 +2065,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb7c55af95fb49e79b5918f7e6aefb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BearWander
-  moveSpeed: 0.6
+  moveSpeed: 2
   turnSpeed: 2
   directionChangeInterval: 4
-  walkRadius: 6
+  walkRadius: 15
   groundMask:
     serializedVersion: 2
     m_Bits: 8
