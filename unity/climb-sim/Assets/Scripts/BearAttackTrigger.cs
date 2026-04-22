@@ -15,7 +15,7 @@ public class BearAttackTrigger : MonoBehaviour
             PlayerHealth ph = other.GetComponentInChildren<PlayerHealth>(); 
             if (ph != null)
             {
-                ph.TakeDamage(20); 
+                ph.TakeDamage(10); 
             }
         }
     }
