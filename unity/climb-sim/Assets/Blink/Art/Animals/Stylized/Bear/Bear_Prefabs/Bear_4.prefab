@@ -2017,9 +2017,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d155c59d8cef344e18ef300d00f5066c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BearController
-  fleeSpeed: 6
+  fleeSpeed: 40
   fleeDuration: 4
-  turnSpeed: 6
+  turnSpeed: 20
   groundMask:
     serializedVersion: 2
     m_Bits: 8
