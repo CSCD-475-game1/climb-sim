@@ -79,6 +79,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void InternalLockUpdate()
         {
+            if (GameInputModeManager.Instance != null && !GameInputModeManager.Instance.IsGameplay())
+                return;
+
             if(Input.GetKeyUp(KeyCode.Escape))
             {
                 m_cursorIsLocked = false;
