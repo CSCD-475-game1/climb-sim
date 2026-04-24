@@ -130,6 +130,20 @@ public class PlayerInventory : MonoBehaviour
             inventoryUI.RefreshFromInventory();
     }
 
+    public void SwapSlots(int fromIndex, int toIndex)
+    {
+        if (fromIndex < 0 || fromIndex >= slotData.Count) return;
+        if (toIndex < 0 || toIndex >= slotData.Count) return;
+        if (fromIndex == toIndex) return;
+
+        InventorySlotData temp = slotData[fromIndex];
+        slotData[fromIndex] = slotData[toIndex];
+        slotData[toIndex] = temp;
+
+        if (inventoryUI != null)
+            inventoryUI.RefreshFromInventory();
+    }
+
     public ItemDefinition GetSelectedItem()
     {
         if (selectedHotbarIndex < 0 || selectedHotbarIndex >= slotData.Count)

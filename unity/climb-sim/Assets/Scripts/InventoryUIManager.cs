@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class InventoryUIManager : MonoBehaviour
@@ -31,12 +32,20 @@ public class InventoryUIManager : MonoBehaviour
     private readonly List<SlotVisual> _inventoryViews = new();
 
     private Canvas _canvas;
+    private RectTransform _canvas2;
     private GameObject _inventoryPanel;
     private bool _inventoryOpen;
     private Font _uiFont;
     private CursorLockMode _previousLockState;
     private bool _previousCursorVisible;
     private bool _hasStoredCursorState;
+    private GameObject _itemTooltip;
+    private RectTransform _tooltipBackgrd;
+    private Text _tooltipTitle;
+    private Text _tooltipDesc;
+
+    private int _dragSource = -1;
+    private GameObject _dragGhost;
 
     private const char xMark = 'x';
 
@@ -50,6 +59,9 @@ public class InventoryUIManager : MonoBehaviour
 
     private void Update()
     {
+        if (_itemTooltip != null && _itemTooltip.activeSelf)
+            UpdateTooltipPosition();
+
         if (GameManager.Instance != null && !GameManager.Instance.IsGameplayMode)
             return;
 
@@ -60,7 +72,6 @@ public class InventoryUIManager : MonoBehaviour
     private void DebugFillInventory()
     {
         if (playerInventory == null) return;
-
         foreach (ItemDefinition item in allItems)
             playerInventory.AddItem(item);
     }
@@ -82,12 +93,17 @@ public class InventoryUIManager : MonoBehaviour
     {
         _uiFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
+        if (FindObjectOfType<EventSystem>() == null)
+            new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+
         GameObject canvasObject = new GameObject("InventoryCanvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
         canvasObject.transform.SetParent(transform, false);
 
         _canvas = canvasObject.GetComponent<Canvas>();
         _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         _canvas.sortingOrder = 100;
+
+        _canvas2 = canvasObject.GetComponent<RectTransform>();
 
         CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -97,6 +113,7 @@ public class InventoryUIManager : MonoBehaviour
 
         CreateHotbar(canvasObject.transform);
         CreateInventoryPanel(canvasObject.transform);
+        CreateTooltip(canvasObject.transform);
     }
 
     private void CreateHotbar(Transform parent)
@@ -185,6 +202,47 @@ public class InventoryUIManager : MonoBehaviour
         }
     }
 
+    private void CreateTooltip(Transform parent)
+    {
+        _itemTooltip = CreateUIObject("ItemTooltip", parent);
+        _tooltipBackgrd = _itemTooltip.AddComponent<RectTransform>();
+        _tooltipBackgrd.anchorMin = new Vector2(0.5f, 0.5f);
+        _tooltipBackgrd.anchorMax = new Vector2(0.5f, 0.5f);
+        _tooltipBackgrd.pivot = new Vector2(0f, 1f);
+        _tooltipBackgrd.sizeDelta = new Vector2(220f, 0f);
+
+        Image bg = _itemTooltip.AddComponent<Image>();
+        bg.color = new Color(0.05f, 0.05f, 0.1f, 0.93f);
+        bg.raycastTarget = false;
+
+        Outline outline = _itemTooltip.AddComponent<Outline>();
+        outline.effectColor = new Color(1f, 1f, 1f, 0.30f);
+        outline.effectDistance = new Vector2(1f, -1f);
+
+        VerticalLayoutGroup layout = _itemTooltip.AddComponent<VerticalLayoutGroup>();
+        layout.padding = new RectOffset(10, 10, 8, 8);
+        layout.spacing = 3f;
+        layout.childAlignment = TextAnchor.UpperLeft;
+        layout.childControlHeight = true;
+        layout.childControlWidth = true;
+        layout.childForceExpandHeight = false;
+        layout.childForceExpandWidth = true;
+
+        ContentSizeFitter fitter = _itemTooltip.AddComponent<ContentSizeFitter>();
+        fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+        fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        _tooltipTitle = CreateText("TooltipName", _itemTooltip.transform, "", 14, FontStyle.Bold, TextAnchor.UpperLeft);
+        _tooltipTitle.color = Color.white;
+
+        _tooltipDesc = CreateText("TooltipDesc", _itemTooltip.transform, "", 12, FontStyle.Normal, TextAnchor.UpperLeft);
+        _tooltipDesc.color = new Color(0.78f, 0.78f, 0.78f, 1f);
+        _tooltipDesc.horizontalOverflow = HorizontalWrapMode.Wrap;
+        _tooltipDesc.verticalOverflow = VerticalWrapMode.Overflow;
+
+        _itemTooltip.SetActive(false);
+    }
+
     private SlotVisual CreateSlot(Transform parent, int slotIndex, Vector2 size, bool isHotbarVisual)
     {
         GameObject slotObject = CreateUIObject(isHotbarVisual ? $"HotbarSlot_{slotIndex}" : $"InventorySlot_{slotIndex}", parent);
@@ -193,11 +251,15 @@ public class InventoryUIManager : MonoBehaviour
 
         Image background = slotObject.AddComponent<Image>();
         background.color = slotColor;
-        background.raycastTarget = false;
+        background.raycastTarget = true;
 
         Outline outline = slotObject.AddComponent<Outline>();
         outline.effectColor = slotBorderColor;
         outline.effectDistance = new Vector2(1f, -1f);
+
+        InventorySlotInteractor interactor = slotObject.AddComponent<InventorySlotInteractor>();
+        interactor.SlotIndex = slotIndex;
+        interactor.Manager = this;
 
         GameObject iconObject = CreateUIObject("Icon", slotObject.transform);
         RectTransform iconRect = iconObject.AddComponent<RectTransform>();
@@ -221,21 +283,17 @@ public class InventoryUIManager : MonoBehaviour
 
         Text itemLabel = CreateText("ItemLabel", slotObject.transform, string.Empty, 28, FontStyle.Bold, TextAnchor.LowerRight);
         RectTransform itemRect = itemLabel.rectTransform;
-
-        // bottom-right corner
         itemRect.anchorMin = new Vector2(1f, 0f);
         itemRect.anchorMax = new Vector2(1f, 0f);
         itemRect.pivot = new Vector2(1f, 0f);
         itemRect.anchoredPosition = new Vector2(-8f, 8f);
         itemRect.sizeDelta = new Vector2(60f, 40f);
-
-        // high contrast yellow
         itemLabel.color = new Color(1f, 0.95f, 0.2f, 1f);
 
-        // add outline for readability
         Outline textOutline = itemLabel.gameObject.AddComponent<Outline>();
         textOutline.effectColor = new Color(0f, 0f, 0f, 0.9f);
         textOutline.effectDistance = new Vector2(2f, -2f);
+
         return new SlotVisual
         {
             slotIndex = slotIndex,
@@ -246,6 +304,104 @@ public class InventoryUIManager : MonoBehaviour
             itemLabel = itemLabel,
             isHotbarVisual = isHotbarVisual
         };
+    }
+
+    // Item tooltip
+
+    public void OnSlotHoverEnter(int slotIndex)
+    {
+        if (!_inventoryOpen || _dragSource >= 0) return;
+        if (playerInventory == null) return;
+
+        PlayerInventory.InventorySlotData data = playerInventory.GetSlotData(slotIndex);
+        if (data == null || data.item == null) return;
+
+        _tooltipTitle.text = data.item.displayName;
+        _tooltipDesc.text = data.item.description;
+        _itemTooltip.SetActive(true);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_tooltipBackgrd);
+        UpdateTooltipPosition();
+    }
+
+    public void OnSlotHoverExit()
+    {
+        if (_itemTooltip != null)
+            _itemTooltip.SetActive(false);
+    }
+
+    private void UpdateTooltipPosition()
+    {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            _canvas2, Input.mousePosition, null, out Vector2 localPos);
+
+        localPos += new Vector2(15f, -15f);
+
+        Rect canvas = _canvas2.rect;
+        Vector2 size = _tooltipBackgrd.sizeDelta;
+        localPos.x = Mathf.Clamp(localPos.x, canvas.xMin, canvas.xMax - size.x);
+        localPos.y = Mathf.Clamp(localPos.y, canvas.yMin + size.y, canvas.yMax);
+
+        _tooltipBackgrd.anchoredPosition = localPos;
+    }
+
+    // Item DragDrop
+
+    public void OnSlotBeginDrag(int slotIndex, PointerEventData eventData)
+    {
+        if (!_inventoryOpen || playerInventory == null) return;
+
+        PlayerInventory.InventorySlotData data = playerInventory.GetSlotData(slotIndex);
+        if (data == null || data.item == null) return;
+
+        _dragSource = slotIndex;
+        OnSlotHoverExit();
+
+        _dragGhost = CreateUIObject("DragGhost", _canvas2);
+        RectTransform ghostRect = _dragGhost.AddComponent<RectTransform>();
+        ghostRect.anchorMin = new Vector2(0.5f, 0.5f);
+        ghostRect.anchorMax = new Vector2(0.5f, 0.5f);
+        ghostRect.pivot = new Vector2(0.5f, 0.5f);
+        ghostRect.sizeDelta = new Vector2(80f, 80f);
+
+        Image ghostImage = _dragGhost.AddComponent<Image>();
+        ghostImage.raycastTarget = false;
+        ghostImage.preserveAspect = true;
+        ghostImage.color = new Color(1f, 1f, 1f, 0.8f);
+
+        if (data.item.icon != null)
+            ghostImage.sprite = data.item.icon;
+
+        UpdateDragGhostPosition(eventData.position, eventData.pressEventCamera);
+    }
+
+    public void OnSlotDrag(PointerEventData eventData)
+    {
+        if (_dragGhost == null) return;
+        UpdateDragGhostPosition(eventData.position, eventData.pressEventCamera);
+    }
+
+    public void OnSlotEndDrag()
+    {
+        if (_dragGhost != null)
+        {
+            Destroy(_dragGhost);
+            _dragGhost = null;
+        }
+        _dragSource = -1;
+    }
+
+    public void OnSlotDrop(int targetIndex)
+    {
+        if (_dragSource < 0 || _dragSource == targetIndex) return;
+        playerInventory.SwapSlots(_dragSource, targetIndex);
+    }
+
+    private void UpdateDragGhostPosition(Vector2 screenPos, Camera cam)
+    {
+        if (_dragGhost == null) return;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            _canvas2, screenPos, cam, out Vector2 localPos);
+        _dragGhost.GetComponent<RectTransform>().anchoredPosition = localPos;
     }
 
     private Text CreateText(string name, Transform parent, string value, int fontSize, FontStyle fontStyle, TextAnchor alignment)
@@ -279,6 +435,18 @@ public class InventoryUIManager : MonoBehaviour
 
     private void SetInventoryOpen(bool open)
     {
+        if (!open)
+        {
+            if (_dragGhost != null)
+            {
+                Destroy(_dragGhost);
+                _dragGhost = null;
+                _dragSource = -1;
+            }
+            if (_itemTooltip != null)
+                _itemTooltip.SetActive(false);
+        }
+
         _inventoryOpen = open;
 
         if (_inventoryPanel != null)
@@ -339,17 +507,11 @@ public class InventoryUIManager : MonoBehaviour
             view.icon.sprite = data.item.icon;
             view.icon.enabled = true;
             if (data.usesRemaining > 0)
-            {
                 view.itemLabel.text = $"{data.usesRemaining}";
-            }
             else if (data.amount > 1)
-            {
                 view.itemLabel.text = $"{xMark}{data.amount}";
-            }
             else
-            {
                 view.itemLabel.text = string.Empty;
-            }
         }
         else
         {
@@ -376,20 +538,8 @@ public class InventoryUIManager : MonoBehaviour
         public Text itemLabel;
     }
 
-    public void OpenInventory()
-    {
-        SetInventoryOpen(true);
-    }
-
-    public void CloseInventory()
-    {
-        SetInventoryOpen(false);
-    }
-
+    public void OpenInventory() => SetInventoryOpen(true);
+    public void CloseInventory() => SetInventoryOpen(false);
     public bool IsOpen => _inventoryOpen;
-
-    public void RefreshFromInventory()
-    {
-        RefreshAllViews();
-    }
+    public void RefreshFromInventory() => RefreshAllViews();
 }
