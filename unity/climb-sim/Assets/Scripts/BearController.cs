@@ -21,6 +21,8 @@ public class BearController : MonoBehaviour
     private Animator animator;
     private Rigidbody rb;
 
+    private BearWander wander;
+
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
@@ -36,6 +38,7 @@ public class BearController : MonoBehaviour
         {
             animator.SetBool("WalkForward", true);
         }
+        wander = GetComponent<BearWander>();
     }
 
     void FixedUpdate()
@@ -77,6 +80,7 @@ public class BearController : MonoBehaviour
         if (fleeTimer <= 0f)
         {
             isFleeing = false;
+            wander.SetActive(true);
 
             if (animator != null)
             {
@@ -87,6 +91,7 @@ public class BearController : MonoBehaviour
 
     public void Repel()
     {
+        wander.SetActive(false);
         if (player == null) return;
 
         Vector3 awayFromPlayer = transform.position - player.position;

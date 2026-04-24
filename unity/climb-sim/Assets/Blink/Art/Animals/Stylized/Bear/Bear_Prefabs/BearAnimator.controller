@@ -90,7 +90,7 @@ AnimatorStateMachine:
     m_Position: {x: 520, y: -540, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 2446633916303521730}
-    m_Position: {x: 520, y: -490, z: 0}
+    m_Position: {x: 620, y: -470, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 6968986496755994998}
     m_Position: {x: 520, y: -290, z: 0}
@@ -321,7 +321,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Walk Forward
-  m_Speed: 1
+  m_Speed: 2
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -914,7 +914,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: RunForward
-  m_Speed: 1
+  m_Speed: 2
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
