@@ -27,6 +27,7 @@ public class BearWander : MonoBehaviour
 
     private void FixedUpdate()
     {
+
         timer -= Time.fixedDeltaTime;
 
         if (timer <= 0f || Vector3.Distance(rb.position, targetPoint) < 0.5f)
@@ -58,6 +59,11 @@ public class BearWander : MonoBehaviour
         }
 
         rb.MovePosition(candidatePos);
+    }
+
+    public void SetActive(bool active)
+    {
+        enabled = active;
     }
 
     private void PickNewTarget()
