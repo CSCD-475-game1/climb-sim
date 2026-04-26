@@ -37,7 +37,7 @@ public class ChatUIManager : MonoBehaviour
         ShowSystemMessage("Press E to interact with objects.");
         ShowSystemMessage($"Press {openChatKey} to open chat.");
         ShowSystemMessage("Use WASD to move around. Space to jump.");
-        ShowSystemMessage("I for inventory.");
+        ShowSystemMessage("TAB for inventory.");
         ShowSystemMessage("Press Esc to close chat.");
         ShowSystemMessage("Enjoy your hike!");
     }

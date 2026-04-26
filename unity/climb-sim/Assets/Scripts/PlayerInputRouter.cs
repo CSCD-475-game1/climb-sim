@@ -64,7 +64,7 @@ public class PlayerInputRouter : MonoBehaviour
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.I))
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
             if (inventoryUI != null)
                 inventoryUI.OpenInventory();
@@ -98,7 +98,7 @@ public class PlayerInputRouter : MonoBehaviour
         //        playerInventory.UseSelectedItem();
         //}
 
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.I))
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Tab))
         {
             if (inventoryUI != null)
                 inventoryUI.CloseInventory();
