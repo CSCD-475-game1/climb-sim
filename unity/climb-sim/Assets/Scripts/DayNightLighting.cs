@@ -59,7 +59,7 @@ public class DayNightLighting : MonoBehaviour
 
     private void AdvanceTime()
     {
-        Debug.Log($"Time of Day: {timeOfDay:F2}");
+        //Debug.Log($"Time of Day: {timeOfDay:F2}");
         if (dayDurationInSeconds <= 0f) return;
 
         timeOfDay += Time.deltaTime / dayDurationInSeconds;
