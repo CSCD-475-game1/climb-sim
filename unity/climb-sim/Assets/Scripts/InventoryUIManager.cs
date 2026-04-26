@@ -69,14 +69,14 @@ public class InventoryUIManager : MonoBehaviour
         if (Input.GetKeyDown(debugClearKey)) DebugClearInventory();
     }
 
-    private void DebugFillInventory()
+    public void DebugFillInventory()
     {
         if (playerInventory == null) return;
         foreach (ItemDefinition item in allItems)
             playerInventory.AddItem(item);
     }
 
-    private void DebugClearInventory()
+    public void DebugClearInventory()
     {
         if (playerInventory == null) return;
         playerInventory.ClearAll();
