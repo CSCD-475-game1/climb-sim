@@ -7,7 +7,10 @@ public class PauseMenu : MonoBehaviour
     void Update()
     {
         if (GameManager.Instance != null && !GameManager.Instance.IsGameplayMode)
-            return; 
+            return;
+
+        if (GameInputModeManager.Instance != null && GameInputModeManager.Instance.IsInventory())
+            return;
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
