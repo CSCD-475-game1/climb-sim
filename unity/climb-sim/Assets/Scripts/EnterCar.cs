@@ -22,6 +22,9 @@ public class EnterCar : MonoBehaviour
     [Header("ChatUI")]
     [SerializeField] private ChatUIManager chatUI;
 
+    [Header("Inventory")]
+    public InventoryUIManager inventoryUI;
+
     private bool inCar = false;
     private bool loggedCar = false;
     private bool showingEnterPrompt = false;
@@ -47,13 +50,25 @@ public class EnterCar : MonoBehaviour
             {
                 if (!showingEnterPrompt)
                 {
-                    chatUI.ShowSystemMessage("Press E to enter vehicle (Unlocked)");
+                    chatUI.ShowSystemMessage("Press E to enter vehicle or R to resupply from the vehicle.");
+
                     showingEnterPrompt = true;
                 }
+                
+                if (Input.GetKeyDown(KeyCode.R))
+                {
+                    Debug.Log("R key pressed.");
+                    inventoryUI.DebugClearInventory();
+                    inventoryUI.DebugFillInventory();
+                            
+                }
+
             }
             else
-            {
-                showingEnterPrompt = false;
+            {                
+                //if (showingEnterPrompt)
+                    //chatUI.ClearSystemMessage();
+                //showingEnterPrompt = false;
             }
         }
         if (Input.GetKeyDown(KeyCode.E))
@@ -63,7 +78,7 @@ public class EnterCar : MonoBehaviour
                 TryEnter();
             else
                 ExitVehicle();
-        }
+        }  
     }
 
     void ForceStartOnFoot()
