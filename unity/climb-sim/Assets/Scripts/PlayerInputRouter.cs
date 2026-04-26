@@ -47,11 +47,13 @@ public class PlayerInputRouter : MonoBehaviour
     {
         HandleHotbarNumberInput();
 
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            if (playerInventory != null)
-                playerInventory.UseSelectedItem();
-        }
+
+        // Disabled use item with F. (items are now used by pressing their hotbar number key)
+        //if (Input.GetKeyDown(KeyCode.F))
+        //{
+        //    if (playerInventory != null)
+        //        playerInventory.UseSelectedItem();
+        //}
 
         if (Input.GetKeyDown(KeyCode.C))
         {
@@ -89,11 +91,12 @@ public class PlayerInputRouter : MonoBehaviour
     {
         HandleHotbarNumberInput();
 
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            if (playerInventory != null)
-                playerInventory.UseSelectedItem();
-        }
+        // Disabled use item with F. (items are now used by pressing their hotbar number key)
+        //if (Input.GetKeyDown(KeyCode.F))
+        //{
+        //    if (playerInventory != null)
+        //        playerInventory.UseSelectedItem();
+        //}
 
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.I))
         {
@@ -109,13 +112,15 @@ public class PlayerInputRouter : MonoBehaviour
         if (playerInventory == null)
             return;
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-            playerInventory.SelectHotbar(0);
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-            playerInventory.SelectHotbar(1);
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-            playerInventory.SelectHotbar(2);
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-            playerInventory.SelectHotbar(3);
+        int pressed = -1;
+        if (Input.GetKeyDown(KeyCode.Alpha1)) pressed = 0;
+        else if (Input.GetKeyDown(KeyCode.Alpha2)) pressed = 1;
+        else if (Input.GetKeyDown(KeyCode.Alpha3)) pressed = 2;
+        else if (Input.GetKeyDown(KeyCode.Alpha4)) pressed = 3;
+
+        if (pressed < 0) return;
+
+        playerInventory.SelectHotbar(pressed);
+        playerInventory.UseSelectedItem();
     }
 }
