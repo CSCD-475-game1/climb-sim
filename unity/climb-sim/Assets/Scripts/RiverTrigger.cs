@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RiverTrigger : MonoBehaviour
 {
@@ -19,6 +20,8 @@ public class RiverTrigger : MonoBehaviour
 
         if (controller != null)
             controller.enabled = true;
+
+        SceneManager.LoadScene("StartScreen", LoadSceneMode.Single);
     }
 
     private void OnTriggerExit(Collider other)

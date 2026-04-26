@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -108,6 +109,8 @@ public class PlayerHealth : MonoBehaviour
             UpdateHealthBar();
 
             controller.enabled = true;
+
+            SceneManager.LoadScene("StartScreen", LoadSceneMode.Single);
         }
     }
 
