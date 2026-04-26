@@ -15,6 +15,9 @@ public class PlayerInventory : MonoBehaviour
 
     [SerializeField] private ParticleSystem deetSprayFX;
     [SerializeField] private ParticleSystem bearSprayFX;
+    [SerializeField] private Light playerFlashlight;
+
+    private bool flashlightOn = false;
     
     private readonly List<InventorySlotData> slotData = new();
     private int selectedHotbarIndex = 0;
@@ -25,6 +28,9 @@ public class PlayerInventory : MonoBehaviour
             playerRoot = transform;
         while (slotData.Count < totalSlotCount)
             slotData.Add(new InventorySlotData());
+
+        if (playerFlashlight != null)
+            playerFlashlight.enabled = false;
     }
 
     public void SelectHotbar(int index)
@@ -83,6 +89,10 @@ public class PlayerInventory : MonoBehaviour
                 if (itemDef.displayName.ToLower().Contains("bear spray"))
                     slotData[i].usesRemaining = 100;
                 if (itemDef.displayName.ToLower().Contains("water"))
+                    slotData[i].usesRemaining = 30;
+                if (itemDef.displayName.ToLower().Contains("first aid") || itemDef.displayName.ToLower().Contains("ifak"))
+                    slotData[i].usesRemaining = 5;
+                if (itemDef.displayName.ToLower().Contains("glowstick"))
                     slotData[i].usesRemaining = 30;
 
                 if (inventoryUI != null) inventoryUI.RefreshFromInventory();
@@ -164,6 +174,18 @@ public class PlayerInventory : MonoBehaviour
 
         Debug.Log($"Attempting to use item: {itemName} in slot {selectedHotbarIndex}");
 
+        if (itemName.Contains("flashlight"))
+        {
+            if (playerFlashlight != null)
+            {
+                flashlightOn = !flashlightOn;
+                playerFlashlight.enabled = flashlightOn;
+                if (chatUI != null)
+                    chatUI.ShowSystemMessage(flashlightOn ? "Flashlight on." : "Flashlight off.");
+            }
+            return;
+        }
+
         if (itemName.Contains("deet"))
         {
             List<SwarmController> swarms = FindSwarmsInRange();
@@ -233,6 +255,41 @@ public class PlayerInventory : MonoBehaviour
             {
                 RemoveItem(slot.item, 1);
             }
+            return;
+        }
+
+        if (itemName.Contains("first aid") || itemName.Contains("ifak"))
+        {
+            PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                playerHealth.RestoreHealth(50f);
+                if (chatUI != null)
+                    chatUI.ShowSystemMessage("Used First Aid Kit. Restored 50 health.");
+            }
+
+            slot.usesRemaining--;
+            if (slot.usesRemaining <= 0)
+                RemoveItem(slot.item, 1);
+            return;
+        }
+
+        if (itemName.Contains("glowstick"))
+        {
+            GameObject glowObj = new GameObject("Glowstick_Light");
+            glowObj.transform.position = playerRoot.position + Vector3.up * 0.1f;
+            Light pointLight = glowObj.AddComponent<Light>();
+            pointLight.type = LightType.Point;
+            pointLight.color = new Color(0.2f, 1f, 0.4f);
+            pointLight.intensity = 1.5f;
+            pointLight.range = 6f;
+
+            slot.usesRemaining--;
+            if (slot.usesRemaining <= 0)
+                RemoveItem(slot.item, 1);
+
+            if (chatUI != null)
+                chatUI.ShowSystemMessage("Placed a glowstick.");
             return;
         }
 

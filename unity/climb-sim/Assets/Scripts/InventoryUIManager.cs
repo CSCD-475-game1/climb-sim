@@ -281,18 +281,18 @@ public class InventoryUIManager : MonoBehaviour
         keyRect.sizeDelta = new Vector2(30f, 20f);
         keyLabel.color = new Color(textColor.r, textColor.g, textColor.b, 0.95f);
 
-        Text itemLabel = CreateText("ItemLabel", slotObject.transform, string.Empty, 28, FontStyle.Bold, TextAnchor.LowerRight);
+        Text itemLabel = CreateText("ItemLabel", slotObject.transform, string.Empty, 13, FontStyle.Bold, TextAnchor.LowerRight);
         RectTransform itemRect = itemLabel.rectTransform;
         itemRect.anchorMin = new Vector2(1f, 0f);
         itemRect.anchorMax = new Vector2(1f, 0f);
         itemRect.pivot = new Vector2(1f, 0f);
-        itemRect.anchoredPosition = new Vector2(-8f, 8f);
-        itemRect.sizeDelta = new Vector2(60f, 40f);
+        itemRect.anchoredPosition = new Vector2(-5f, 5f);
+        itemRect.sizeDelta = new Vector2(50f, 18f);
         itemLabel.color = new Color(1f, 0.95f, 0.2f, 1f);
 
         Outline textOutline = itemLabel.gameObject.AddComponent<Outline>();
         textOutline.effectColor = new Color(0f, 0f, 0f, 0.9f);
-        textOutline.effectDistance = new Vector2(2f, -2f);
+        textOutline.effectDistance = new Vector2(1f, -1f);
 
         return new SlotVisual
         {
