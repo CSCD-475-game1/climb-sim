@@ -51,6 +51,12 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    public void RestoreHealth(float amount)
+    {
+        health = Mathf.Clamp(health + amount, 0f, maxHealth);
+        UpdateHealthBar();
+    }
+
     public void TakeDamage(float amount)
     {
         health -= amount;
