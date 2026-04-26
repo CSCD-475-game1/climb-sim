@@ -5,6 +5,7 @@ public class PlayerHealth : MonoBehaviour
 {
     private UIDocument uiDoc;
     private VisualElement healthBar;
+    private ThirstController thirstController;
 
     [Header("Settings")]
     public float maxHealth;
@@ -39,11 +40,13 @@ public class PlayerHealth : MonoBehaviour
 
         health = maxHealth;
         UpdateHealthBar();
+
+        thirstController = FindObjectOfType<ThirstController>();
     }
 
     void Update()
     {
-        if (health < maxHealth)
+        if (health < maxHealth && (thirstController == null || thirstController.currentThirst > 0))
         {
             health += recoveryRate * Time.deltaTime;
             health = Mathf.Clamp(health, 0f, maxHealth);
