@@ -39,6 +39,11 @@ public class CarController : MonoBehaviour
         moveInput = Input.GetAxis("Vertical");
         turnInput = Input.GetAxis("Horizontal");
     }
+    
+    public bool GetCanDrive()
+    {
+        return canDrive;
+    }
 
     void FixedUpdate()
     {

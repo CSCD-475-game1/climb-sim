@@ -79,6 +79,12 @@ public class OffRoadWheelCarController : MonoBehaviour
         UpdateWheelVisuals();
     }
 
+    public bool GetCanDrive()
+    {
+        return canDrive;
+    }
+
+
     void ConfigureWheel(WheelCollider wheel)
     {
         wheel.mass = 35f;

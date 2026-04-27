@@ -110,6 +110,7 @@ public class PlayerHealth : MonoBehaviour
 
             controller.enabled = true;
 
+            PlayerPrefs.SetString("GameResult", "Game Over! You ded.");
             SceneManager.LoadScene("StartScreen", LoadSceneMode.Single);
         }
     }

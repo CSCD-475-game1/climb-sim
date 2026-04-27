@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameWinTrigger : MonoBehaviour
 {
@@ -24,13 +25,11 @@ public class GameWinTrigger : MonoBehaviour
 
     private void HandleWin()
     {
+        PlayerPrefs.SetString("GameResult", "Victory! You safely guided Alice back to the trailhead.");
+        SceneManager.LoadScene("StartScreen", LoadSceneMode.Single);
+
         // stop gameplay
-        GameManager.Instance.SetMode(GameManager.PlayerMode.Paused);
-
-        // optional: stop NPC movement
-        // optional: stop player movement
-
-        // show win UI
-        WinUI.Instance.ShowWinScreen();
+        //GameManager.Instance.SetMode(GameManager.PlayerMode.Paused);
+        //WinUI.Instance.ShowWinScreen();
     }
 }
