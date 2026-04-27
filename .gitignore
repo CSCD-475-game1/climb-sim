@@ -8,6 +8,10 @@
 /[Oo]bj/
 /[Bb]uild/
 /[Bb]uilds/
+
+/unity/climb-sim/Builds/*
+!/unity/climb-sim/Builds/*.app
+!/unity/climb-sim/Builds/*.zip
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 *.log
