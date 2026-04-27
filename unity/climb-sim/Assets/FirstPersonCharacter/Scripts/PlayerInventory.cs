@@ -192,7 +192,7 @@ public class PlayerInventory : MonoBehaviour
 
             if (swarms.Count == 0)
             {
-                if (chatUI != null) chatUI.ShowSystemMessage("No mosquito swarms in range.");
+                //if (chatUI != null) chatUI.ShowSystemMessage("No mosquito swarms in range.");
                 return;
             }
 
@@ -208,8 +208,8 @@ public class PlayerInventory : MonoBehaviour
             }
 
 
-            if (chatUI != null)
-                chatUI.ShowSystemMessage($"Used DEET. Repelled {swarms.Count} mosquito swarm(s).");
+            //if (chatUI != null)
+                //chatUI.ShowSystemMessage($"Used DEET. Repelled {swarms.Count} mosquito swarm(s).");
             return;
         }
 
@@ -221,13 +221,13 @@ public class PlayerInventory : MonoBehaviour
             if (bear != null)
             {
                 bear.Repel();
-                if (chatUI != null)
-                    chatUI.ShowSystemMessage($"Used Bear Spray. Repelled {bear.name}.");
+                //if (chatUI != null)
+                    //chatUI.ShowSystemMessage($"Used Bear Spray. Repelled {bear.name}.");
             }
             else
             {
-                if (chatUI != null)
-                    chatUI.ShowSystemMessage("No bears in range to repel.");
+                //if (chatUI != null)
+                    //chatUI.ShowSystemMessage("No bears in range to repel.");
             }
             slot.usesRemaining--;
 
