@@ -65,7 +65,7 @@ public class Trail : MonoBehaviour
             }
             ParseCsv();
             DrawPreview();
-            PaintTrail(_points);
+            //PaintTrail(_points);
             reset = false;
         }
     }

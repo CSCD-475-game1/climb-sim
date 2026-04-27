@@ -250,3 +250,4 @@ env/
 *.key
 
 /gis
+/terrain

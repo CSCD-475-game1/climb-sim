@@ -22,6 +22,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
         [SerializeField] private AudioClip[] m_FootstepSounds;    // an array of footstep sounds that will be randomly selected from.
         [SerializeField] private AudioClip m_JumpSound;           // the sound played when character leaves the ground.
         [SerializeField] private AudioClip m_LandSound;           // the sound played when character touches back on ground.
+        [SerializeField] private StaminaController m_StaminaController;
+        [SerializeField] private float m_ExhaustedSpeedMultiplier = 0.8f;
 
         private Camera m_Camera;
         private bool m_Jump;
@@ -54,6 +56,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
         // Update is called once per frame
         private void Update()
         {
+            //Debug.Log("Gameplay mode: " + (GameManager.Instance != null ? GameManager.Instance.IsGameplayMode.ToString() : "No GameManager instance"));
+
+            if (GameManager.Instance != null && !GameManager.Instance.IsGameplayMode)
+                return; 
+
             RotateView();
             // the jump state needs to read here to make sure it is not missed
             if (!m_Jump)
@@ -86,6 +93,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void FixedUpdate()
         {
+            if (GameManager.Instance != null && !GameManager.Instance.IsGameplayMode)
+                return; 
+
             float speed;
             GetInput(out speed);
             // always move along the camera forward as it is the direction that it being aimed at
@@ -178,10 +188,22 @@ namespace UnityStandardAssets.Characters.FirstPerson
 #if !MOBILE_INPUT
             // On standalone builds, walk/run speed is modified by a key press.
             // keep track of whether or not the character is walking or running
-            m_IsWalking = !Input.GetKey(KeyCode.LeftShift);
+            bool wantsSprint = Input.GetKey(KeyCode.LeftShift);
+
+            if (m_StaminaController != null && m_StaminaController.IsExhausted)
+            {
+                m_IsWalking = true;
+                speed = m_WalkSpeed * m_ExhaustedSpeedMultiplier;
+            }
+            else
+            {
+                m_IsWalking = !wantsSprint;
+                speed = m_IsWalking ? m_WalkSpeed : m_RunSpeed;
+            }
+            //m_IsWalking = !Input.GetKey(KeyCode.LeftShift);
 #endif
             // set the desired speed to be walking or running
-            speed = m_IsWalking ? m_WalkSpeed : m_RunSpeed;
+            //speed = m_IsWalking ? m_WalkSpeed : m_RunSpeed;
             m_Input = new Vector2(horizontal, vertical);
 
             // normalize input if it exceeds 1 in combined length:
@@ -200,18 +222,18 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
         {
-            Rigidbody body = hit.collider.attachedRigidbody;
-            //dont move the rigidbody if the character is on top of it
-            if (m_CollisionFlags == CollisionFlags.Below)
-            {
-                return;
-            }
+            //Rigidbody body = hit.collider.attachedRigidbody;
+            ////dont move the rigidbody if the character is on top of it
+            //if (m_CollisionFlags == CollisionFlags.Below)
+            //{
+                //return;
+            //}
 
-            if (body == null || body.isKinematic)
-            {
-                return;
-            }
-            body.AddForceAtPosition(m_CharacterController.velocity*0.1f, hit.point, ForceMode.Impulse);
+            //if (body == null || body.isKinematic)
+            //{
+                //return;
+            //}
+            //body.AddForceAtPosition(m_CharacterController.velocity*0.1f, hit.point, ForceMode.Impulse);
         }
     }
 }

@@ -10,14 +10,24 @@ public class EnterCar : MonoBehaviour
     [Header("Car side")]
     public float enterDistance = 4f;
 
-    private GameObject car;
-    private CarController carController;
+    public GameObject car;
+    private OffRoadWheelCarController carController;
+
     private Camera carCamera;
     private AudioListener fpsListener;
     private AudioListener carListener;
 
+    public bool isUnlocked = true;
+
+    [Header("ChatUI")]
+    [SerializeField] private ChatUIManager chatUI;
+
+    [Header("Inventory")]
+    public InventoryUIManager inventoryUI;
+
     private bool inCar = false;
     private bool loggedCar = false;
+    private bool showingEnterPrompt = false;
 
     void Start()
     {
@@ -27,15 +37,48 @@ public class EnterCar : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.Instance != null && !GameManager.Instance.IsGameplayMode)
+            return; 
+
         TryFindCar();
 
+        if (!inCar && car != null && isUnlocked)
+        {
+            float d = Vector3.Distance(fpsControllerRoot.transform.position, car.transform.position);
+
+            if (d <= enterDistance)
+            {
+                if (!showingEnterPrompt)
+                {
+                    chatUI.ShowSystemMessage("Press E to enter vehicle or R to resupply from the vehicle.");
+
+                    showingEnterPrompt = true;
+                }
+                
+                if (Input.GetKeyDown(KeyCode.R))
+                {
+                    Debug.Log("R key pressed.");
+                    inventoryUI.DebugClearInventory();
+                    inventoryUI.DebugFillInventory();
+                            
+                }
+
+            }
+            else
+            {                
+                //if (showingEnterPrompt)
+                    //chatUI.ClearSystemMessage();
+                //showingEnterPrompt = false;
+            }
+        }
         if (Input.GetKeyDown(KeyCode.E))
         {
+            Debug.Log("E key pressed. In car: " + inCar);
             if (!inCar)
                 TryEnter();
             else
                 ExitVehicle();
-        }
+        }  
     }
 
     void ForceStartOnFoot()
@@ -62,14 +105,15 @@ public class EnterCar : MonoBehaviour
 
     void TryFindCar()
     {
+        //Debug.Log("Trying to find car... " + (car != null ? "Car already assigned: " + car.name : "Car not assigned"));
         if (car != null && carController != null && carCamera != null)
             return;
 
-        car = GameObject.FindWithTag("Car");
-        if (car == null)
-            return;
+        //car = GameObject.FindWithTag("Car");
+        //if (car == null)
+            //return;
 
-        carController = car.GetComponent<CarController>();
+        carController = car.GetComponent<OffRoadWheelCarController>();
         carCamera = FindNamedCamera(car, "CarCamera");
 
         if (carCamera != null)
@@ -122,6 +166,10 @@ public class EnterCar : MonoBehaviour
     {
         inCar = true;
 
+        Vector3 enterPos = car.transform.position + car.transform.right * 4f + Vector3.up * 0.25f;
+        fpsControllerRoot.transform.position = enterPos;
+
+
         // Enable car view first
         carCamera.enabled = true;
         if (carListener != null) carListener.enabled = true;
@@ -136,31 +184,47 @@ public class EnterCar : MonoBehaviour
         // Enable car movement
         carController.canDrive = true;
 
-        Debug.Log($"Entered car. Cameras active: {Camera.allCamerasCount}");
+
+
+        Debug.Log($"Entered car. car transform: {car.transform.position}, player transform: {fpsControllerRoot.transform.position}. Cameras active: {Camera.allCamerasCount}");
     }
 
     void ExitVehicle()
     {
         inCar = false;
 
-        // Re-enable FPS view first
-        fpsCamera.enabled = true;
-        if (fpsListener != null) fpsListener.enabled = true;
-
-        // Disable car view
+        // Disable car control/view
         carController.canDrive = false;
-        carCamera.enabled = false;
+        if (carCamera != null) carCamera.enabled = false;
         if (carListener != null) carListener.enabled = false;
 
-        // Re-enable FPS movement
+        // Keep FPS controls off while repositioning
+        SetFPSControlsEnabled(false);
+
+        CharacterController cc = fpsControllerRoot.GetComponent<CharacterController>();
+        if (cc != null) cc.enabled = false;
+
+        // Put player beside car, slightly offset upward to avoid ground clipping
+        Vector3 exitPos = car.transform.position + car.transform.right * 4f + Vector3.up * 0.25f;
+        fpsControllerRoot.transform.position = exitPos;
+
+        // Optional: face same direction as car
+        Vector3 flatForward = car.transform.forward;
+        flatForward.y = 0f;
+        if (flatForward.sqrMagnitude > 0.001f)
+            fpsControllerRoot.transform.rotation = Quaternion.LookRotation(flatForward);
+
+        if (cc != null) cc.enabled = true;
+
+        // Re-enable FPS view
+        if (fpsCamera != null) fpsCamera.enabled = true;
+        if (fpsListener != null) fpsListener.enabled = true;
+
+        // Re-enable FPS controls last
         SetFPSControlsEnabled(true);
 
-        // Move player beside car
-        fpsControllerRoot.transform.position = car.transform.position + car.transform.right * 2f;
-
-        Debug.Log($"Exited car. Cameras active: {Camera.allCamerasCount}");
+        Debug.Log($"Exited car. car transform: {car.transform.position}, player transform: {fpsControllerRoot.transform.position}");
     }
-
     void SetFPSControlsEnabled(bool enabledState)
     {
         if (fpsBehavioursToDisable == null) return;
