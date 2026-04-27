@@ -4,6 +4,7 @@ public class MapPickup : MonoBehaviour
 {
     [SerializeField] private GameObject mapVisual;
     [SerializeField] private GameObject minimapCanvas;
+    [SerializeField] private ChatUIManager chatUIManager;
     [SerializeField] private string promptMessage = "Press E to take map";
 
     private bool playerNearby;
@@ -44,6 +45,8 @@ public class MapPickup : MonoBehaviour
 
         playerNearby = true;
         Debug.Log(promptMessage);
+        if (chatUIManager != null)
+            chatUIManager.ShowSystemMessage(promptMessage);
     }
 
     private void OnTriggerExit(Collider other)

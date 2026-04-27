@@ -48,5 +48,17 @@ public class StartScreenManager : MonoBehaviour
         SceneManager.LoadScene("Trailhead", LoadSceneMode.Additive);
         SceneManager.LoadScene("TrailA", LoadSceneMode.Additive);
         SceneManager.LoadScene("LogCrossing", LoadSceneMode.Additive);
+        SceneManager.LoadScene("Forestland", LoadSceneMode.Additive);
+    }
+
+    public void QuitGame()
+    {
+        Debug.Log("Quitting game...");
+
+        Application.Quit();
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
     }
 }
