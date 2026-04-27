@@ -77,3 +77,5 @@
 *.xcf filter=lfs diff=lfs merge=lfs -text
 # .asset files
 *.asset filter=lfs diff=lfs merge=lfs -text
+unity/climb-sim/Builds/*.zip filter=lfs diff=lfs merge=lfs -text
+unity/climb-sim/Builds/Mac/*.zip filter=lfs diff=lfs merge=lfs -text
