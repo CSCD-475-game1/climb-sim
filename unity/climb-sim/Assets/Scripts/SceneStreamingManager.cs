@@ -95,4 +95,14 @@ public class SceneStreamingManager : MonoBehaviour
     {
         return SceneManager.GetSceneByName(sceneName).isLoaded;
     }
+
+    // exit game
+    public void ExitGame()
+    {
+        Application.Quit();
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+    }
 }
