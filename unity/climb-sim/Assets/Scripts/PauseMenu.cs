@@ -4,6 +4,7 @@ public class PauseMenu : MonoBehaviour
 {
     public GameObject container;
     public GameObject exitButton;
+    public GameObject resumeButton;
 
     void Update()
     {
@@ -22,11 +23,18 @@ public class PauseMenu : MonoBehaviour
             {
                 Time.timeScale = 0f;
                 exitButton.SetActive(true);
+                resumeButton.SetActive(true);
+
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.None;
             }
             else 
             {
                 Time.timeScale = 1f;
                 exitButton.SetActive(false);
+                resumeButton.SetActive(false);
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
             }
         }
     } 
@@ -35,6 +43,9 @@ public class PauseMenu : MonoBehaviour
     {
         container.SetActive(false);
         exitButton.SetActive(false);
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        resumeButton.SetActive(false);
         Time.timeScale = 1f;
     }
 
@@ -53,6 +64,7 @@ public class PauseMenu : MonoBehaviour
         container.SetActive(false);
         Time.timeScale = 1f;
         exitButton.SetActive(false);
+        resumeButton.SetActive(false);
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
