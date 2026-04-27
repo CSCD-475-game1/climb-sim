@@ -21,6 +21,7 @@ public class RiverTrigger : MonoBehaviour
         if (controller != null)
             controller.enabled = true;
 
+        PlayerPrefs.SetString("GameResult", "Game Over! You ded.");
         SceneManager.LoadScene("StartScreen", LoadSceneMode.Single);
     }
 

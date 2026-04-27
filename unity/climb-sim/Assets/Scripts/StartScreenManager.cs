@@ -5,6 +5,7 @@ using TMPro;
 public class StartScreenManager : MonoBehaviour
 {
     [SerializeField] private TMP_Dropdown difficultyDropdown;
+    [SerializeField] private TMP_Text gameResultText;
 
     private void Start()
     {
@@ -12,6 +13,20 @@ public class StartScreenManager : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        string resultMessage = PlayerPrefs.GetString("GameResult", "");
+
+        if (!string.IsNullOrEmpty(resultMessage))
+        {
+            gameResultText.text = resultMessage;
+            gameResultText.gameObject.SetActive(true);
+        }
+        else
+        {
+            gameResultText.gameObject.SetActive(false);
+        }
+
+        PlayerPrefs.DeleteKey("GameResult");
     }
 
     public void StartGame()
