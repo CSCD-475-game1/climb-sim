@@ -6,12 +6,14 @@ public class StaminaController : MonoBehaviour
     private UIDocument uiDoc;
     private VisualElement staminaBar;
 
+
     [Header("Settings")]
     public float maxStamina = 100f;
     public float currentStamina = 100f;
     public float consumptionRate = 20f;
     public float regenRate = 15f;
     public bool IsExhausted => currentStamina <= 10.0f;
+    public ThirstController thirstController;
 
     void Awake()
     {
@@ -45,12 +47,17 @@ public class StaminaController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.LeftShift) && currentStamina > 0f)
+        if (thirstController != null && thirstController.GetCurrentThirst() < 10f)
+        {
+            currentStamina = 0f;
+
+        } else if (Input.GetKey(KeyCode.LeftShift) && currentStamina > 0f)
             currentStamina -= consumptionRate * Time.deltaTime;
         else if (currentStamina < maxStamina)
             currentStamina += regenRate * Time.deltaTime;
 
         currentStamina = Mathf.Clamp(currentStamina, 0f, maxStamina);
+
         UpdateStaminaBar();
     }
 

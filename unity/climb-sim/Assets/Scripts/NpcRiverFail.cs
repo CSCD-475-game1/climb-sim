@@ -13,13 +13,13 @@ public class NpcRiverFail : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (gameOverTriggered) return;
+        //if (gameOverTriggered) return;
 
-        if (other.CompareTag("River"))
-        {
-            gameOverTriggered = true;
-            HandleRiverFail();
-        }
+        //if (other.CompareTag("River"))
+        //{
+            //gameOverTriggered = true;
+            //HandleRiverFail();
+        //}
     }
 
     private void HandleRiverFail()

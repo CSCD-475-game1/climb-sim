@@ -37,6 +37,12 @@ public class NpcHikerController : MonoBehaviour
 
     private bool crawlingDownhill = true;
 
+    private string difficulty;
+
+    [SerializeField] private float spawnRadius = 8f;
+    [SerializeField] private Transform npcSpawn;
+
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -47,6 +53,10 @@ public class NpcHikerController : MonoBehaviour
     }
     private void Start()
     {
+        difficulty = PlayerPrefs.GetString("Difficulty", "A - Easy");
+        Debug.Log("NPC Difficulty: " + difficulty);
+
+
         CheckGround();
         //AlignGraphicsToSlope();
 
@@ -65,6 +75,7 @@ public class NpcHikerController : MonoBehaviour
             //animator.SetBool("IsCrawling", true);
             //animator.SetFloat("Speed", 0f);
         //}
+        SpawnAtDifficultySignPost();
     }
 
     private void Update()
@@ -82,6 +93,9 @@ public class NpcHikerController : MonoBehaviour
 
         Vector3 toPlayer = playerPos - currentPos;
         toPlayer.y = 0f;
+
+
+        Debug.Log("Npc Position: " + currentPos + " | Player Position: " + playerPos + " | To Player: " + toPlayer);
 
         float distance = toPlayer.magnitude;
 
@@ -310,6 +324,42 @@ public class NpcHikerController : MonoBehaviour
             pos.y = hit.point.y + heightOffset;
             transform.position = pos;
         }
+    }
+    private void SpawnAtDifficultySignPost()
+    {
+        string tagName = "A";
+
+        switch (difficulty)
+        {
+            case "A - Easy": tagName = "A"; break;
+            case "B": tagName = "B"; break;
+            case "C": tagName = "C"; break;
+            case "D": tagName = "D"; break;
+            case "E": tagName = "E"; break;
+            case "F": tagName = "F"; break;
+            case "G - Hard": tagName = "G"; break;
+        }
+
+        GameObject signPost = GameObject.FindGameObjectWithTag(tagName);
+
+        if (signPost == null)
+        {
+            Debug.LogError("No signpost found with tag: " + tagName);
+            return;
+        }
+
+        Vector2 randomCircle = Random.insideUnitCircle * spawnRadius;
+        Vector3 spawnPosition = signPost.transform.position + new Vector3(randomCircle.x, 50f, randomCircle.y);
+
+        if (Physics.Raycast(spawnPosition, Vector3.down, out RaycastHit hit, 200f, groundMask))
+        {
+            spawnPosition = hit.point + Vector3.up * heightOffset;
+        }
+
+        rb.position = spawnPosition;
+        transform.position = spawnPosition;
+
+        Debug.Log("NPC spawned near signpost " + tagName + " at " + spawnPosition);
     }
 }
 
