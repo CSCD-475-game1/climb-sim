@@ -25,7 +25,7 @@ public class PauseMenu : MonoBehaviour
                 exitButton.SetActive(true);
                 resumeButton.SetActive(true);
 
-                Cursor.visible = false;
+                Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
             }
             else 
