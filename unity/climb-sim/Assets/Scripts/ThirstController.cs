@@ -52,6 +52,11 @@ public class ThirstController : MonoBehaviour
         UpdateThirstBar();
     }
 
+    public float GetCurrentThirst()
+    {
+        return currentThirst;
+    }
+
     public void RestoreThirst(float amount)
     {
         currentThirst += amount;
