@@ -31,7 +31,7 @@ public class ChatUIManager : MonoBehaviour
         inputField.onSubmit.AddListener(HandleSubmit);
 
         if (panelGroup != null)
-            panelGroup.alpha = 0.65f;
+            panelGroup.alpha = 0.95f;
 
         ShowSystemMessage("Welcome to the Hiking Sim!");
         ShowSystemMessage("Press E to interact with objects.");

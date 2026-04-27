@@ -30,6 +30,7 @@ public class TutorialUI : MonoBehaviour
         "<align=left>" + 
         "<b><color=#FFD966>E</color></b> Interact\n" +
         "<b><color=#FFD966># 1-4</color></b> Use items in quick slots\n" +
+        "<b><color=#FFD966>R</color></b> Resupply from your car.\n" +
         "<b><color=#FFD966>Tab</color></b>  Open inventory\n\n" +
         "</align>" +
         "Use supplies when needed. Some items may help you survive hazards.\n\n" +
